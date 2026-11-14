@@ -529,7 +529,7 @@ if (findTrayMatch(lv, st, lv.pieces[cands[c]]) >= 0) matchable.push(cands[c]);
 if (st.tray.length >= cap && !matchable.length) {
 if (rescues > 0) {
 rescues--; used++;
-var r = revive(lv, st.alive, st.tray);
+var r = revive(lv, st.alive, st.tray, (seed || 99) + t * 13 + used);
 if (!r.ok) { dead = true; break; }
 st = initState(lv, r.alive, []);
 cap = Math.max(2, cfg.C - (penalty || 0));
@@ -675,11 +675,11 @@ if (t2.ok) return { ok: true, solution: rebuilt, rebuilt: true, verify: t2 };
 rollback();
 return { ok: false, reason: '洗牌后未能重建解序列', rolledBack: true };
 }
-function revive(level, alive, trayIds) {
+function revive(level, alive, trayIds, seed) {
 var back = (trayIds || []).slice();
 var newAlive = alive.slice();
 for (var i = 0; i < back.length; i++) newAlive[back[i]] = true;
-var r = reshuffle(level, newAlive, Date.now());
+var r = reshuffle(level, newAlive, seed || Date.now());
 if (!r.ok) return { ok: false, reason: r.reason || '重排失败', back: back };
 var ver = verifySequence(level, newAlive, []);
 if (!ver.ok) return { ok: false, reason: '重建解校验失败：' + ver.reason, back: back };
