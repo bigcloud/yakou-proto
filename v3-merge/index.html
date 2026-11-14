@@ -3,52 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>咬合合成 · v3.0 可玩原型</title>
+<title>咬合合成 · v3.0 可玩原型（层叠版）</title>
 <style>
   :root{
     --bg:#0f131a;--panel:#171d28;--panel2:#1d2533;--line:#2a3446;--text:#e7ecf5;--dim:#8d99ad;
-    --accent:#ffb454;--good:#6ee7b7;--bad:#fb7185;--gold:#e0b45c;
+    --accent:#ffb454;--good:#6ee7b7;--bad:#fb7185;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
     font-family:-apple-system,"PingFang SC","Noto Sans SC",system-ui,sans-serif;overflow:hidden;user-select:none}
   #app{height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;padding:7px 10px 9px;gap:6px}
-  header{display:flex;align-items:center;gap:8px;height:32px;padding:0 2px;font-size:13px}
+  header{display:flex;align-items:center;gap:8px;height:30px;padding:0 2px;font-size:13px}
   header b{color:var(--accent);font-size:15px}
   .spacer{flex:1}
   .hud{display:flex;gap:10px;font-size:11px;color:var(--dim)}
   .hud em{font-style:normal;color:var(--text)}
-  #board{position:relative;flex:1;min-height:220px;border-radius:14px;background:#131a24;
+  #board{position:relative;flex:1;min-height:240px;border-radius:14px;background:#131a24;
     border:1px solid var(--line);overflow:hidden}
-  #board .hint{position:absolute;left:10px;top:8px;right:10px;font-size:9px;color:var(--dim);z-index:999;pointer-events:none;line-height:1.35}
+  #board .hint{position:absolute;left:10px;top:8px;right:10px;font-size:9px;color:var(--dim);
+    line-height:1.35;pointer-events:none;z-index:999}
   .p{position:absolute;border-radius:10px;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.08);
+    box-shadow:0 5px 12px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.08);
     transition:transform .12s,filter .15s;cursor:pointer}
   .p svg{pointer-events:none}
   .p .bump{position:absolute;left:50%;top:-9%;transform:translateX(-50%);
     width:40%;height:18%;border-radius:6px;background:rgba(255,255,255,.8);box-shadow:0 1px 3px rgba(0,0,0,.4)}
-  .p.blank .bump{top:4%;height:20%;background:rgba(0,0,0,.45);box-shadow:inset 0 2px 4px rgba(0,0,0,.7)}
-  .p.blocked{filter:grayscale(.85) brightness(.55);cursor:default;pointer-events:none}
-  .p.blocked svg{opacity:.25}
+  .p.blank .bump{top:4%;height:20%;background:rgba(0,0,0,.48);box-shadow:inset 0 2px 4px rgba(0,0,0,.7)}
+  .p.blocked{filter:grayscale(.9) brightness(.5);cursor:default;pointer-events:none}
+  .p.blocked svg{opacity:.2}
   .p .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:8px;color:#c9d2e3;
     background:rgba(0,0,0,.5);border-radius:5px;padding:0 3px}
   .p.blocked .lock{display:block}
   #trayWrap{background:#121824;border:1px solid var(--line);border-radius:14px;padding:7px 9px 8px;
     display:flex;flex-direction:column;gap:5px}
   .trayRow{display:flex;align-items:center;gap:6px}
-  .trayRow .label{width:26px;font-size:10px;color:var(--dim);writing-mode:vertical-rl;letter-spacing:2px}
+  .trayRow .label{width:24px;font-size:10px;color:var(--dim);text-align:center}
   .slots{flex:1;display:flex;gap:5px;min-width:0}
-  .slot{flex:1;min-width:0;height:54px;border-radius:10px;border:1px dashed #33405a;position:relative;
-    display:flex;align-items:center;justify-content:center;cursor:pointer}
-  .slot.filled{border-style:solid;border-color:#3d4b64;background:#101620}
-  .slot .item{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  .slot{flex:1;min-width:0;height:56px;border-radius:10px;border:1px dashed #33405a;position:relative;
+    display:flex;align-items:center;justify-content:center}
+  .slot.filled{border-style:solid;border-color:#3d4b64;background:#101620;cursor:pointer}
+  .slot .item{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;
     position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);animation:pop .18s ease-out}
   @keyframes pop{0%{transform:scale(.6);opacity:.2}100%{transform:scale(1);opacity:1}}
-  .slot .lvl{position:absolute;right:-3px;bottom:-3px;font-size:9px;font-weight:700;color:#1a1206;
+  .slot .lvl{position:absolute;right:-4px;bottom:-4px;font-size:9px;font-weight:700;color:#1a1206;
     background:var(--accent);border-radius:7px;padding:0 4px;line-height:1.4}
-  .slot .mergeable{position:absolute;inset:-3px;border:2px solid var(--good);border-radius:10px;
-    box-shadow:0 0 12px rgba(110,231,183,.5);animation:pulse 1s infinite}
-  @keyframes pulse{50%{opacity:.45}}
+  .miniGrid{display:grid;gap:1px}
+  .miniGrid svg{display:block}
   .actions{display:flex;gap:7px}
   .actions button{flex:1;height:38px;border-radius:10px;border:1px solid var(--line);
     background:var(--panel);color:var(--text);font-size:12px;display:flex;align-items:center;justify-content:center;gap:4px}
@@ -64,13 +64,23 @@
   #modal .btns button{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);
     background:var(--panel);color:var(--text);font-size:14px}
   #modal .btns button.primary{background:linear-gradient(180deg,#ffc46b,#f59e0b);border-color:#f59e0b;color:#241a06;font-weight:700}
-  #toast{position:fixed;left:50%;bottom:232px;transform:translateX(-50%);background:rgba(23,29,40,.96);
+  #toast{position:fixed;left:50%;bottom:236px;transform:translateX(-50%);background:rgba(23,29,40,.96);
     border:1px solid #33405a;color:var(--text);font-size:12px;padding:8px 14px;border-radius:20px;
     opacity:0;transition:opacity .18s;pointer-events:none;max-width:86vw;text-align:center;z-index:30}
   #toast.show{opacity:1}
   .totems{display:flex;gap:4px;align-items:center}
   .totem{width:12px;height:12px;border-radius:3px;background:#1e2635;border:1px solid #33405a}
   .totem.done{background:linear-gradient(180deg,#ffd98a,#e0a93c);border-color:#e0a93c}
+  /* 合成动画 */
+  .fx{position:fixed;pointer-events:none;z-index:40;border-radius:8px;background-repeat:no-repeat}
+  .fx.glow{box-shadow:0 0 28px 8px rgba(255,215,120,.55),0 0 60px 18px rgba(255,180,84,.25)}
+  .spark{position:fixed;pointer-events:none;z-index:41;width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle,#fff,#ffcf6b 60%,transparent 70%);animation:spark .45s ease-out forwards}
+  @keyframes spark{0%{transform:scale(.4);opacity:1}100%{transform:scale(2.2) translateY(-14px);opacity:0}}
+  .mergeBurst{position:fixed;pointer-events:none;z-index:42;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,224,150,.9),rgba(255,180,84,.35) 55%,transparent 70%);
+    animation:burst .38s ease-out forwards}
+  @keyframes burst{0%{transform:scale(.3);opacity:.95}100%{transform:scale(1.9);opacity:0}}
 </style>
 </head>
 <body>
@@ -78,10 +88,7 @@
   <header>
     <div>第 <b id="lvNum">1</b> 关</div>
     <div class="spacer"></div>
-    <div class="hud">
-      <span>图腾 <em id="totemText">0/3</em></span>
-      <span id="timer">00:00</span>
-    </div>
+    <div class="hud"><span>图腾 <em id="totemText">0/3</em></span><span id="timer">00:00</span></div>
   </header>
   <div id="board"><div class="hint">点亮碎片→卡槽 · 两块咬合自动合成 · 8 块 = 1 个图腾</div></div>
   <div id="trayWrap">
@@ -91,7 +98,7 @@
     </div>
     <div class="trayRow">
       <div class="label">暂存</div>
-      <div class="slots" id="stashSlots" style="max-width:118px"></div>
+      <div class="slots" id="stashSlots" style="max-width:120px"></div>
       <div style="flex:1"></div>
       <div class="totems" id="totems"></div>
     </div>
@@ -119,18 +126,29 @@ const TYPES = [
   {shape:'triangle', color:'blue'}, {shape:'wave', color:'green'}
 ];
 const LEVELS = [
-  { types: 3, tray: 5, stash: 2, layers: 2, size: 52, seed: 21 },
-  { types: 5, tray: 5, stash: 2, layers: 3, size: 50, seed: 42 },
-  { types: 6, tray: 5, stash: 2, layers: 3, size: 48, seed: 63 },
+  { types: 3, tray: 6, stash: 5, layers: 2, cols: 5, rows: 4, seed: 21 },
+  { types: 5, tray: 6, stash: 2, layers: 3, cols: 6, rows: 5, seed: 42 },
+  { types: 6, tray: 6, stash: 2, layers: 3, cols: 6, rows: 5, seed: 63 },
 ];
 const $ = id => document.getElementById(id);
-let S = null;
+let S = null, AC = null;
+function audio(){ if (AC) return AC; try { AC = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} return AC; }
+function beep(freq, dur, type, gain){
+  const ac = audio(); if (!ac) return;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type || 'sine'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, ac.currentTime);
+  g.gain.linearRampToValueAtTime(gain == null ? 0.15 : gain, ac.currentTime + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + (dur || 0.12));
+  o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + (dur || 0.12) + 0.02);
+}
+function snapSound(){ beep(880,0.06,'triangle',0.14); setTimeout(()=>beep(1320,0.09,'sine',0.1),30); }
+function vibrate(ms){ if (navigator.vibrate) try{ navigator.vibrate(ms); }catch(e){} }
 
-function icon(type, size){
-  const t = TYPES[type];
-  const c = COLORS[t.color];
-  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${SHAPES[t.shape].replace('COLOR', c)}</svg>`;
-  return svg;
+function icon(type, size, opacity){
+  const t = TYPES[type], c = COLORS[t.color];
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="opacity:${opacity==null?1:opacity}">` +
+    SHAPES[t.shape].replace('COLOR', c) + '</svg>';
 }
 function rngFactory(a){ return function(){ a|=0; a=(a+0x6D2B79F5)|0;
   let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t;
@@ -139,29 +157,47 @@ function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show');
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1400); }
 function modal(html){ $('modal').innerHTML=html; $('modalBg').classList.add('show'); }
 function closeModal(){ $('modalBg').classList.remove('show'); }
+function boardPieces(){ return S.pieces.filter(p=>p.location==='board'); }
+function blockedCount(p){ return p.blockedBy.filter(b=>S.pieces[b].location==='board').length; }
 
-/* ================= 生成 ================= */
-/* 每种类型 8 块（4 凸 4 凹）→ 8 块恰好合成一个图腾 */
+/* ================= 生成：对齐的层叠（恢复 2.4 的秩序） ================= */
 function generate(idx){
   const cfg = LEVELS[idx];
   const rng = rngFactory(cfg.seed);
-  const total = cfg.types * 8;
-  const AW = 340, AH = 280, sz = cfg.size;
+  const board = $('board');
+  const bw = board.clientWidth || 340, bh = board.clientHeight || 400;
+  const pad = 14;
+  const cell = Math.floor(Math.min((bw-pad*2)/cfg.cols, (bh-pad*2)/cfg.rows));
+  const size = Math.max(40, Math.round(cell*0.94));
+  const startX = Math.round((bw - cfg.cols*cell)/2 + (cell-size)/2);
+  const startY = Math.round((bh - cfg.rows*cell)/2 + (cell-size)/2);
+  const used = {}; // layer->set(cellIndex)
   const pieces = [];
   let id = 0;
+  const total = cfg.types * 8;
   for (let t = 0; t < cfg.types; t++){
     for (let k = 0; k < 8; k++){
+      // 选层 & 空闲格
+      let layer = 0, cellIdx = -1, guard = 0;
+      while (guard++ < 200){
+        layer = Math.floor(rng()*cfg.layers);
+        cellIdx = Math.floor(rng()*(cfg.cols*cfg.rows));
+        const key = layer + ':' + cellIdx;
+        if (!used[key]) { used[key] = 1; break; }
+      }
+      const r = Math.floor(cellIdx / cfg.cols), c = cellIdx % cfg.cols;
+      const jx = (rng()-0.5)*3, jy = (rng()-0.5)*3;
       pieces.push({
         id: id++, type: t, level: 1,
         orientation: k < 4 ? 'tab' : 'blank',
         location: 'board',
-        x: Math.round(rng()*(AW-sz)), y: Math.round(rng()*(AH-sz)),
-        layer: Math.floor(rng()*cfg.layers), size: sz,
-        blockedBy: []
+        x: Math.round(startX + c*cell + layer*4 + jx),
+        y: Math.round(startY + r*cell + layer*4 + jy),
+        layer, size, blockedBy: []
       });
     }
   }
-  // 遮挡关系
+  // 遮挡：更高层 + 重叠 ≥15%
   for (const a of pieces){
     for (const b of pieces){
       if (b === a || b.layer <= a.layer) continue;
@@ -170,33 +206,68 @@ function generate(idx){
       if (ox*oy >= 0.15*a.size*a.size) a.blockedBy.push(b.id);
     }
   }
-  return { level: idx, cfg, pieces, tray: [], stash: [],
-    trayCap: cfg.tray, stashCap: cfg.stash, totemsDone: 0, totemsTotal: cfg.types,
-    done: false, start: Date.now(), shuffleLeft: 1, sel: null };
+  return { level: idx, cfg, pieces, tray: [], stash: [], trayCap: cfg.tray, stashCap: cfg.stash,
+    layout: { startX, startY, cell, cols: cfg.cols, rows: cfg.rows },
+    totemsDone: 0, totemsTotal: cfg.types, done: false, busy: false, start: Date.now(), shuffleLeft: 1 };
 }
-function blockedCount(p){
-  return p.blockedBy.filter(b => S.pieces[b].location === 'board').length;
-}
-function boardPieces(){ return S.pieces.filter(p => p.location === 'board'); }
 
 /* ================= 渲染 ================= */
 function renderBoard(){
   const board = $('board');
   [...board.querySelectorAll('.p')].forEach(e => e.remove());
+  const oldGrid = board.querySelector('.gridbg'); if (oldGrid) oldGrid.remove();
+  if (S.layout){
+    const L = S.layout, g = document.createElement('div');
+    g.className = 'gridbg';
+    g.style.cssText = `position:absolute;left:${L.startX}px;top:${L.startY}px;
+      width:${L.cols*L.cell}px;height:${L.rows*L.cell}px;pointer-events:none;opacity:.55;
+      background-image:
+        repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px ${L.cell}px),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px ${L.cell}px);
+      border-radius:10px;`;
+    board.insertBefore(g, board.querySelector('.hint'));
+  }
   boardPieces().slice().sort((a,b)=>a.layer-b.layer).forEach(p=>{
     const el = document.createElement('div');
+    el.dataset.id = p.id;
     el.className = 'p' + (p.orientation === 'blank' ? ' blank' : '') +
       (blockedCount(p) > 0 ? ' blocked' : '');
     el.style.cssText = `left:${p.x}px;top:${p.y}px;width:${p.size}px;height:${p.size}px;z-index:${p.layer*1000+p.id};
-      background:linear-gradient(160deg,${COLORS[TYPES[p.type].color]}33, #18202c 70%);
+      background:linear-gradient(160deg,${COLORS[TYPES[p.type].color]}2e,#18202c 72%);
       border:2px solid ${COLORS[TYPES[p.type].color]}`;
-    el.dataset.id = p.id;
-    el.innerHTML = '<span class="bump"></span>' + icon(p.type, Math.round(p.size*0.5)) +
+    el.innerHTML = '<span class="bump"></span>' + icon(p.type, Math.round(p.size*0.48)) +
       '<span class="lock">' + blockedCount(p) + '</span>';
     if (blockedCount(p) === 0) el.onclick = () => pick(p.id);
     board.appendChild(el);
   });
   $('board').querySelector('.hint').style.display = boardPieces().length ? 'block' : 'none';
+}
+function itemEl(it){
+  const d = document.createElement('div');
+  d.className = 'item';
+  const c = COLORS[TYPES[it.type].color];
+  d.style.background = `linear-gradient(160deg,${c}3a,#141b26 75%)`;
+  d.style.border = '1px solid ' + c;
+  if (it.level === 1){
+    d.innerHTML = icon(it.type, 30);
+    const m = document.createElement('i');
+    m.style.cssText = `position:absolute;top:2px;left:2px;width:8px;height:8px;border-radius:50%;
+      background:${it.orientation === 'tab' ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.6)'};`;
+    d.appendChild(m);
+  } else {
+    // 视觉上"块变大"：×2 两个图，×4 四个图
+    const n = Math.pow(2, it.level - 1);
+    const g = document.createElement('div');
+    g.className = 'miniGrid';
+    const ps = n === 2 ? 20 : 14;
+    g.style.gridTemplateColumns = `repeat(${n===2?2:2}, ${ps}px)`;
+    for (let i=0;i<Math.min(n,4);i++) g.innerHTML += `<div>${icon(it.type, ps, .95)}</div>`;
+    d.appendChild(g);
+    const b = document.createElement('span');
+    b.className = 'lvl'; b.textContent = '×' + n;
+    d.appendChild(b);
+  }
+  return d;
 }
 function renderTray(){
   const wrap = $('traySlots'); wrap.innerHTML = '';
@@ -223,7 +294,6 @@ function renderTray(){
     }
     st.appendChild(slot);
   }
-  // 图腾进度
   const tw = $('totems'); tw.innerHTML = '';
   for (let i=0;i<S.totemsTotal;i++){
     const d = document.createElement('div');
@@ -234,68 +304,64 @@ function renderTray(){
   $('shuffleCount').textContent = S.shuffleLeft;
   $('lvNum').textContent = S.level + 1;
 }
-function itemEl(it){
-  const d = document.createElement('div');
-  d.className = 'item';
-  const c = COLORS[TYPES[it.type].color];
-  d.style.background = `linear-gradient(160deg,${c}44,#141b26 72%)`;
-  d.style.border = '1px solid ' + c;
-  d.innerHTML = icon(it.type, it.level >= 3 ? 34 : 30);
-  if (it.level > 1){
-    const b = document.createElement('span');
-    b.className = 'lvl';
-    b.textContent = '×' + Math.pow(2, it.level - 1);
-    d.appendChild(b);
-  } else {
-    // 凸/凹小标记
-    const m = document.createElement('i');
-    m.style.cssText = `position:absolute;top:2px;left:2px;width:8px;height:8px;border-radius:50%;
-      background:${it.orientation === 'tab' ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.6)'};`;
-    d.appendChild(m);
-  }
-  return d;
-}
 
 /* ================= 交互 ================= */
 function pick(id){
-  if (!S || S.done) return;
+  if (!S || S.done || S.busy) return;
   const p = S.pieces[id];
-  if (!p || p.location !== 'board') return;
-  if (blockedCount(p) > 0) return;
-  if (S.tray.length >= S.trayCap){
-    toast('卡槽满了：点卡槽里的碎片放进暂存');
-    return;
+  if (!p || p.location !== 'board' || blockedCount(p) > 0) return;
+  if (S.tray.length >= S.trayCap){ toast('卡槽满了：点卡槽里的块放进暂存'); return; }
+  // 飞入动画（体感）
+  const el = [...$('board').querySelectorAll('.p')].find(e=>+e.dataset.id===id);
+  if (el){
+    const r = el.getBoundingClientRect();
+    const fx = document.createElement('div');
+    fx.className='fx';
+    fx.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:10px;
+      border:2px solid ${COLORS[TYPES[p.type].color]};
+      background:linear-gradient(160deg,${COLORS[TYPES[p.type].color]}55,#18202c)`;
+    fx.innerHTML = icon(p.type, Math.round(r.width*0.48));
+    fx.style.display='flex';fx.style.alignItems='center';fx.style.justifyContent='center';
+    document.body.appendChild(fx);
+    beep(520,0.06,'sine',0.08);
+    requestAnimationFrame(()=>{ fx.style.transition='transform .22s ease-out,opacity .22s'; fx.style.transform='translateY(14px) scale(.8)'; fx.style.opacity='.2'; });
+    setTimeout(()=>fx.remove(), 240);
   }
-  p.location = 'tray';
-  p.blockedBy = [];
+  p.location = 'tray'; p.blockedBy = [];
   S.tray.push(p);
   renderBoard(); renderTray();
   resolveMerges();
 }
 function moveToStash(id){
-  if (S.done) return;
+  if (S.done || S.busy) return;
   const it = S.tray.find(x => x.id === id);
   if (!it) return;
   if (S.stash.length >= S.stashCap){ toast('暂存也满了'); return; }
   S.tray = S.tray.filter(x => x.id !== id);
   it.location = 'stash';
   S.stash.push(it);
-  renderTray();
-  checkFail();
+  renderTray(); checkFail();
 }
 function takeFromStash(id){
-  if (S.done) return;
+  if (S.done || S.busy) return;
   const it = S.stash.find(x => x.id === id);
   if (!it) return;
-  if (S.tray.length >= S.trayCap){ toast('卡槽满了，先合一次或腾一格'); return; }
+  if (S.tray.length >= S.trayCap){ toast('卡槽满了，先腾一格'); return; }
   S.stash = S.stash.filter(x => x.id !== id);
   it.location = 'tray';
   S.tray.push(it);
-  renderTray();
-  resolveMerges();
+  renderTray(); resolveMerges();
 }
 
-/* ================= 合成 ================= */
+/* ================= 合成：带"合上去"的动画与音效 ================= */
+function bestPair(){
+  for (let i=0;i<S.tray.length;i++){
+    for (let j=i+1;j<S.tray.length;j++){
+      if (canMerge(S.tray[i], S.tray[j])) return [i,j];
+    }
+  }
+  return null;
+}
 function canMerge(a,b){
   if (!a || !b || a.id === b.id) return false;
   if (a.type !== b.type || a.level !== b.level) return false;
@@ -303,48 +369,81 @@ function canMerge(a,b){
   return true;
 }
 function resolveMerges(){
-  let merged = false;
-  for (let i=0;i<S.tray.length;i++){
-    for (let j=i+1;j<S.tray.length;j++){
-      const a = S.tray[i], b = S.tray[j];
-      if (!canMerge(a,b)) continue;
-      // 合并：b 并入 a
-      S.tray = S.tray.filter(x => x.id !== b.id);
-      a.level += 1;
-      b.location = 'gone';
-      if (a.level > 3){
-        // 8 块 = 图腾
-        S.tray = S.tray.filter(x => x.id !== a.id);
-        a.location = 'gone';
-        S.totemsDone++;
-        toast('图腾完成！');
-      } else if (a.level >= 3) {
-        toast('咬合合成 ×' + Math.pow(2, a.level - 1));
+  if (S.done || S.busy) return;
+  const pair = bestPair();
+  if (!pair){ checkFail(); return; }
+  const [i,j] = pair;
+  const a = S.tray[i], b = S.tray[j];
+  const slots = $('traySlots').querySelectorAll('.slot');
+  const ra = slots[i] && slots[i].getBoundingClientRect();
+  const rb = slots[j] && slots[j].getBoundingClientRect();
+  S.busy = true;
+  if (ra && rb){
+    const mk = (rect, it) => {
+      const d = document.createElement('div');
+      d.className = 'fx glow';
+      d.style.cssText = `left:${rect.left+3}px;top:${rect.top+3}px;width:${rect.width-6}px;height:${rect.height-6}px;
+        display:flex;align-items:center;justify-content:center;border:2px solid ${COLORS[TYPES[it.type].color]};
+        background:linear-gradient(160deg,${COLORS[TYPES[it.type].color]}55,#141b26);
+        transition:transform .26s cubic-bezier(.3,1.4,.6,1),opacity .26s;`;
+      d.innerHTML = icon(it.type, 26);
+      document.body.appendChild(d);
+      return d;
+    };
+    const fa = mk(ra, a), fb = mk(rb, b);
+    const midX = (ra.left + rb.left)/2, midY = (ra.top + rb.top)/2;
+    requestAnimationFrame(()=>{
+      const tx = midX - (ra.left+3), ty = midY - (ra.top+3);
+      fa.style.transform = `translate(${tx}px,${ty}px) scale(.9)`;
+      fb.style.transform = `translate(${midX-(rb.left+3)}px,${midY-(rb.top+3)}px) scale(.9)`;
+    });
+    // 合体闪光 + 音效
+    setTimeout(()=>{
+      const burst = document.createElement('div');
+      burst.className='mergeBurst';
+      burst.style.cssText = `left:${midX-40}px;top:${midY-40}px;width:80px;height:80px;`;
+      document.body.appendChild(burst); setTimeout(()=>burst.remove(),420);
+      for (let k=0;k<6;k++){
+        const sp=document.createElement('div'); sp.className='spark';
+        sp.style.left=(midX+(Math.random()-0.5)*56)+'px'; sp.style.top=(midY+(Math.random()-0.5)*40)+'px';
+        document.body.appendChild(sp); setTimeout(()=>sp.remove(),480);
       }
-      merged = true;
-      renderTray(); renderBoard();
-      if (S.totemsDone >= S.totemsTotal) { win(); return; }
-      // 继续链式合成（同步，避免与自动测试/连点交错）
-      resolveMerges();
-      return;
-    }
+      snapSound(); vibrate(18);
+      fa.remove(); fb.remove();
+      applyMerge(a,b);
+    }, 300);
+  } else {
+    applyMerge(a,b);
   }
-  if (!merged) checkFail();
+}
+function applyMerge(a,b){
+  S.tray = S.tray.filter(x => x.id !== b.id);
+  a.level += 1; b.location = 'gone';
+  let totem = false;
+  if (a.level > 3){
+    S.tray = S.tray.filter(x => x.id !== a.id);
+    a.location = 'gone';
+    S.totemsDone++; totem = true;
+    burstTotem();
+  }
+  S.busy = false;
+  renderTray(); renderBoard();
+  if (totem) toast('图腾完成！');
+  if (S.totemsDone >= S.totemsTotal){ win(); return; }
+  resolveMerges();
+}
+function burstTotem(){
+  snapSound(); vibrate([10,40,10]);
+  toast('图腾集齐 +1');
 }
 function checkFail(){
   if (S.done) return;
-  if (S.totemsDone >= S.totemsTotal) { win(); return; }
+  if (S.totemsDone >= S.totemsTotal){ win(); return; }
   if (S.tray.length < S.trayCap) return;
-  // 卡槽满：如暂存有空间，自动放一块过去（满槽安全网）
   if (S.stash.length < S.stashCap){
-    const it = S.tray.shift();
-    it.location = 'stash';
-    S.stash.push(it);
-    renderTray();
-    toast('卡槽满了，自动放进暂存');
-    return;
+    const it = S.tray.shift(); it.location='stash'; S.stash.push(it);
+    renderTray(); toast('卡槽满了，自动放进暂存'); return;
   }
-  // 都满了，且没有可合 → 失败
   fail();
 }
 function fail(){
@@ -356,74 +455,70 @@ function fail(){
 function win(){
   if (S.done) return;
   S.done = true;
-  const sec = Math.round((Date.now() - S.start)/1000);
-  modal('<h2>图腾集齐了！</h2>' +
-    '<p>用时 ' + Math.floor(sec/60) + ' 分 ' + (sec%60) + ' 秒 · ' +
-    S.totemsTotal + ' 个图腾 · 合成了 ' + (S.totemsTotal * 3) + ' 次</p>' +
-    '<div class="btns"><button class="primary" id="mNext">下一关</button><button id="mAgain">重玩</button></div>');
+  const sec = Math.round((Date.now()-S.start)/1000);
+  modal('<h2>图腾集齐了！</h2><p>用时 ' + Math.floor(sec/60) + ' 分 ' + (sec%60) + ' 秒 · ' +
+    S.totemsTotal + ' 个图腾</p><div class="btns"><button class="primary" id="mNext">下一关</button>' +
+    '<button id="mAgain">重玩</button></div>');
   $('mNext').onclick = () => { closeModal(); startLevel(Math.min(LEVELS.length-1, S.level+1)); };
   $('mAgain').onclick = () => { closeModal(); startLevel(S.level); };
 }
 function hint(){
-  if (S.done) return;
-  // 优先提示：卡槽里能与板上碎片合成的
-  const trayL1 = S.tray.filter(x => x.level === 1);
+  if (S.done || S.busy) return;
+  const l1 = S.tray.filter(x=>x.level===1);
   for (const p of boardPieces()){
-    if (blockedCount(p) > 0) continue;
-    for (const t of trayL1){
-      if (canMerge(t, p)) { flashPiece(p.id); toast('这块能和卡槽里的咬合'); return; }
-    }
+    if (blockedCount(p)) continue;
+    for (const t of l1) if (canMerge(t,p)){ flash(p.id); toast('这块能和卡槽里的咬合'); return; }
   }
-  const any = boardPieces().find(p => blockedCount(p) === 0);
-  if (any) { flashPiece(any.id); toast('先取这块'); }
+  const any = boardPieces().find(p=>blockedCount(p)===0);
+  if (any){ flash(any.id); toast('先取这块'); }
 }
-function flashPiece(id){
-  const el = [...$('board').querySelectorAll('.p')].find(e => +e.dataset.id === id);
-  if (!el) return;
-  el.style.boxShadow = '0 0 0 3px rgba(110,231,183,.7)';
-  setTimeout(()=>{ el.style.boxShadow = ''; }, 1200);
+function flash(id){
+  const el=[...$('board').querySelectorAll('.p')].find(e=>+e.dataset.id===id);
+  if(!el) return; el.style.boxShadow='0 0 0 3px rgba(110,231,183,.7)';
+  setTimeout(()=>el.style.boxShadow='',1200);
 }
 function shuffle(){
-  if (S.done) return;
-  if (S.shuffleLeft <= 0){ toast('本关换堆用完了'); return; }
+  if (S.done || S.busy) return;
+  if (S.shuffleLeft<=0){ toast('本关换堆用完了'); return; }
   S.shuffleLeft--;
-  const rng = rngFactory(Date.now()%100000);
-  const cfg = S.cfg, AW = 340, AH = 280, sz = cfg.size;
-  for (const p of S.pieces.filter(x => x.location === 'board')){
-    p.x = Math.round(rng()*(AW-sz));
-    p.y = Math.round(rng()*(AH-sz));
-    p.layer = Math.floor(rng()*cfg.layers);
-    p.blockedBy = [];
+  const cfg=S.cfg, board=$('board');
+  const bw=board.clientWidth, bh=board.clientHeight, pad=14;
+  const cell=Math.floor(Math.min((bw-pad*2)/cfg.cols,(bh-pad*2)/cfg.rows));
+  const size=Math.max(40,Math.round(cell*0.94));
+  const startX=Math.round((bw-cfg.cols*cell)/2+(cell-size)/2);
+  const startY=Math.round((bh-cfg.rows*cell)/2+(cell-size)/2);
+  const rng=rngFactory(Date.now()%100000);
+  const used={};
+  for (const p of boardPieces()){
+    let layer=0, idx=-1, guard=0;
+    while(guard++<200){ layer=Math.floor(rng()*cfg.layers); idx=Math.floor(rng()*(cfg.cols*cfg.rows)); if(!used[layer+':'+idx]){used[layer+':'+idx]=1;break;} }
+    const r=Math.floor(idx/cfg.cols), c=idx%cfg.cols;
+    p.layer=layer; p.size=size;
+    p.x=Math.round(startX+c*cell+layer*4);
+    p.y=Math.round(startY+r*cell+layer*4);
+    p.blockedBy=[];
   }
-  for (const a of S.pieces.filter(x=>x.location==='board')){
-    for (const b of S.pieces.filter(x=>x.location==='board')){
-      if (b === a || b.layer <= a.layer) continue;
-      const ox = Math.max(0, Math.min(a.x+a.size,b.x+b.size)-Math.max(a.x,b.x));
-      const oy = Math.max(0, Math.min(a.y+a.size,b.y+b.size)-Math.max(a.y,b.y));
-      if (ox*oy >= 0.15*a.size*a.size) a.blockedBy.push(b.id);
-    }
+  for (const a of boardPieces()) for (const b of boardPieces()){
+    if(b===a||b.layer<=a.layer) continue;
+    const ox=Math.max(0,Math.min(a.x+a.size,b.x+b.size)-Math.max(a.x,b.x));
+    const oy=Math.max(0,Math.min(a.y+a.size,b.y+b.size)-Math.max(a.y,b.y));
+    if(ox*oy>=0.15*a.size*a.size) a.blockedBy.push(b.id);
   }
-  renderBoard(); renderTray();
-  toast('已换堆');
-}
-function updateHud(){
-  $('timer').textContent = '00:00';
+  renderBoard(); renderTray(); toast('已换堆');
 }
 function startLevel(idx){
-  S = generate(idx);
   closeModal();
-  renderBoard(); renderTray();
-  // 给盘面碎片标 id 方便点击
-  [...$('board').querySelectorAll('.p')].forEach((el,i)=>{});
-  bindBoard();
-  updateHud();
+  const go = () => {
+    S = generate(idx);
+    renderBoard(); renderTray();
+    $('lvNum').textContent = idx + 1;
+  };
+  if ($('board').clientWidth) go();
+  else requestAnimationFrame(go);
 }
-function bindBoard(){
-  // renderBoard 内部已绑定 onclick；这里只做兜底
-}
-$('btnHint').onclick = hint;
-$('btnShuffle').onclick = shuffle;
-$('btnRestart').onclick = () => startLevel(S.level);
+$('btnHint').onclick=hint;
+$('btnShuffle').onclick=shuffle;
+$('btnRestart').onclick=()=>startLevel(S.level);
 setInterval(()=>{ if(!S||S.done) return;
   const sec=Math.round((Date.now()-S.start)/1000);
   $('timer').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
@@ -431,45 +526,44 @@ setInterval(()=>{ if(!S||S.done) return;
 
 /* ================= 调试 ================= */
 window.__merge = {
-  state:()=>S,
-  pick, moveToStash, takeFromStash, resolveMerges, startLevel,
+  state:()=>S, pick, moveToStash, takeFromStash, startLevel,
   autoPlay(){
     let guard=0;
-    while(!S.done && guard++<800){
+    const tick=()=>{
+      if (S.done || guard++>900) return S.done;
+      if (S.busy) return setTimeout(tick, 120);
       const avail = boardPieces().filter(p=>blockedCount(p)===0);
-      if(!avail.length) break;
-      // 1) 卡槽里已有可合对的，should be auto; 2) 取一块能与卡槽合成的
-      let target = avail.find(p => S.tray.some(t => canMerge(t, p)));
-      if(!target){
-        // 3) 暂存里能与卡槽合成的，取回
-        const st = S.stash.find(x => S.tray.some(t => canMerge(t, x)));
-        if(st && S.tray.length < S.trayCap){ takeFromStash(st.id); continue; }
-        // 4) 卡槽满：先腾到暂存
-        if(S.tray.length >= S.trayCap){
-          if(S.stash.length < S.stashCap){
-            // 优先腾出"没有潜在搭档"的那块
-            const noPair = S.tray.find(x => !avail.some(p => canMerge(x,p)) &&
-              !S.stash.some(y => canMerge(x,y)));
-            moveToStash((noPair || S.tray[0]).id);
-            continue;
-          }
+      // 目标类型：盘面上剩余最多的类型
+      const remain = {};
+      boardPieces().forEach(p=>remain[p.type]=(remain[p.type]||0)+1);
+      let targetType = -1, best = -1;
+      for (const k in remain) if (remain[k] > best){ best = remain[k]; targetType = +k; }
+      // 1) 能直接合
+      let target = avail.find(p=>S.tray.some(t=>canMerge(t,p)));
+      // 2) 目标类型的碎片
+      if (!target) target = avail.find(p=>p.type===targetType);
+      // 3) 卡槽满：腾一块（优先非目标类型）
+      if (!target && S.tray.length >= S.trayCap){
+        if (S.stash.length < S.stashCap){
+          const junk = S.tray.find(x=>x.type!==targetType) || S.tray[0];
+          moveToStash(junk.id); return setTimeout(tick, 100);
         }
-        // 5) 选一块"卡槽里最少见的类型/朝向"
-        const score = p => {
-          const same = S.tray.filter(t => t.type === p.type && t.level === 1 && t.orientation === p.orientation).length;
-          const opp  = S.tray.filter(t => t.type === p.type && t.level === 1 && t.orientation !== p.orientation).length;
-          return same * 10 - opp * 5;
-        };
-        target = avail.slice().sort((a,b)=>score(a)-score(b))[0];
       }
+      // 4) 从暂存取回能合的
+      if (!target){
+        const st = S.stash.find(x=>S.tray.some(t=>canMerge(t,x)));
+        if (st && S.tray.length < S.trayCap){ takeFromStash(st.id); return setTimeout(tick, 100); }
+      }
+      // 5) 任意可取的
+      if (!target) target = avail[0];
+      if (!target) return S.done;
       pick(target.id);
-      // 自动合成是异步的，等它完成
-      if(!S.done) { /* no-op */ }
-    }
-    return true;
+      setTimeout(tick, 360);
+    };
+    return tick();
   }
 };
-startLevel(0);
+setTimeout(()=>startLevel(0), 50);
 </script>
 </body>
 </html>
