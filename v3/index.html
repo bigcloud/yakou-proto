@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>咬合拼图 · v3.0 真拼图核心实验</title>
+<style>
+  :root{
+    --bg:#0f131a; --panel:#171d28; --panel2:#1d2533; --line:#2a3446;
+    --text:#e7ecf5; --dim:#8d99ad; --accent:#ffb454; --good:#6ee7b7; --bad:#fb7185;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"PingFang SC","Noto Sans SC",system-ui,sans-serif;
+    user-select:none;overflow:hidden}
+  #app{height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;
+    padding:8px 10px 10px;gap:6px}
+  header{display:flex;align-items:center;gap:8px;height:34px;padding:0 2px}
+  .lv{font-size:14px;font-weight:700}.lv b{color:var(--accent)}
+  .spacer{flex:1}
+  .prog{font-size:12px;color:var(--dim)}
+  .timer{font-size:12px;color:var(--dim)}
+  main{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0}
+  #frameWrap{flex:0 0 auto;display:flex;justify-content:center;position:relative}
+  #frame{position:relative;border-radius:10px;background:#141a24;border:1px solid var(--line);
+    box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:hidden}
+  #frame .ghost{position:absolute;inset:0;background-repeat:no-repeat;background-size:100% 100%;
+    opacity:.20;filter:saturate(.8)}
+  .cell{position:absolute;border:1px dashed #33405a;border-radius:3px;background:rgba(255,255,255,.012)}
+  .cell.frontier{border-color:rgba(255,180,84,.55);background:rgba(255,180,84,.06);
+    box-shadow:inset 0 0 12px rgba(255,180,84,.12)}
+  .cell.hint{border-color:var(--good);box-shadow:0 0 0 2px rgba(110,231,183,.35) inset}
+  .cell.bad{animation:bad .3s}
+  @keyframes bad{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  .placed{position:absolute;background-repeat:no-repeat;border-radius:2px;
+    animation:pop .22s ease-out;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
+  @keyframes pop{0%{transform:scale(.55);opacity:.3}100%{transform:scale(1);opacity:1}}
+  .edge{position:absolute;pointer-events:none}
+  .edge.tab{background:var(--good);border-radius:50%;box-shadow:0 0 6px rgba(110,231,183,.4)}
+  .edge.blank{background:#0b0f16;border-radius:50%;border:1px solid #26314a}
+  #pileWrap{flex:1;min-height:120px;background:#121824;border:1px solid var(--line);border-radius:12px;
+    padding:7px 10px;display:flex;flex-direction:column;gap:2px}
+  .pileTitle{font-size:11px;color:var(--dim);display:flex;justify-content:space-between}
+  #pile{flex:1;display:flex;gap:18px;justify-content:center;align-items:center;min-height:0}
+  .stack{position:relative;width:52px;height:112px}
+  .mini{position:absolute;left:0;width:52px;height:52px;border-radius:6px;border:1px solid #3a465c;
+    background-repeat:no-repeat;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+  .mini.top{cursor:pointer;border-color:rgba(255,180,84,.55);box-shadow:0 0 0 1px rgba(255,180,84,.3),0 6px 14px rgba(0,0,0,.45)}
+  .mini.top:active{transform:translateY(-2px)}
+  .stackCount{position:absolute;right:-2px;bottom:-2px;font-size:10px;color:var(--dim);
+    background:#0f131a;border:1px solid var(--line);border-radius:8px;padding:0 4px}
+  #handBar{background:#121824;border:1px solid var(--line);border-radius:12px;padding:6px 10px 8px}
+  .handTitle{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:4px}
+  #hand{display:flex;gap:8px;justify-content:center;min-height:62px}
+  .slot{width:58px;height:58px;border:1px dashed #33405a;border-radius:8px;position:relative;
+    display:flex;align-items:center;justify-content:center;color:#44546e;font-size:11px}
+  .slot.filled{border-style:solid;border-color:#3d4b64;background:#101620;cursor:pointer}
+  .slot.filled.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,180,84,.25)}
+  .slot .mini{position:relative;left:auto;top:auto;width:52px;height:52px}
+  .actions{display:flex;gap:8px}
+  .actions button{flex:1;height:38px;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel);color:var(--text);font-size:13px;display:flex;align-items:center;justify-content:center;gap:4px}
+  .actions button:active{background:var(--panel2)}
+  .actions button.primary{background:linear-gradient(180deg,#ffc46b,#f59e0b);border-color:#f59e0b;color:#241a06;font-weight:700}
+  #modalBg{position:fixed;inset:0;background:rgba(6,9,14,.72);display:none;align-items:center;
+    justify-content:center;padding:24px;z-index:20;backdrop-filter:blur(2px)}
+  #modalBg.show{display:flex}
+  #modal{width:100%;max-width:340px;background:linear-gradient(180deg,#1b2331,#151b26);
+    border:1px solid #33405a;border-radius:16px;padding:18px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+  #modal h2{margin:0 0 8px;font-size:20px}
+  #modal p{color:var(--dim);font-size:13px;line-height:1.6;margin:6px 0}
+  #modal .btns{display:flex;gap:8px;margin-top:14px}
+  #modal .btns button{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel);color:var(--text);font-size:14px}
+  #modal .btns button.primary{background:linear-gradient(180deg,#ffc46b,#f59e0b);border-color:#f59e0b;color:#241a06;font-weight:700}
+  #toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:rgba(23,29,40,.96);
+    border:1px solid #33405a;color:var(--text);font-size:12px;padding:8px 14px;border-radius:20px;
+    opacity:0;transition:opacity .18s;pointer-events:none;max-width:86vw;text-align:center;z-index:30}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="lv">第 <b id="lvNum">1</b> 关</div>
+    <div class="spacer"></div>
+    <div class="prog" id="prog">0/12</div>
+    <div class="timer" id="timer">00:00</div>
+  </header>
+  <main>
+    <div id="frameWrap"><div id="frame"></div></div>
+    <div id="pileWrap">
+      <div class="pileTitle"><span>碎片堆（点最上面的碎片）</span><span id="pileLeft"></span></div>
+      <div id="pile"></div>
+    </div>
+  </main>
+  <div id="handBar">
+    <div class="handTitle"><span>手牌（选中 → 点拼图板落位）</span><span id="handCap">0/3</span></div>
+    <div id="hand"></div>
+  </div>
+  <div class="actions">
+    <button id="btnHint">提示</button>
+    <button id="btnSwap">换一手 <em id="swapCount">3</em></button>
+    <button id="btnRestart">重开</button>
+  </div>
+</div>
+<div id="modalBg"><div id="modal"></div></div>
+<div id="toast"></div>
+<script>
+/* ============ 场景图（程序化占位，正式版换原画） ============ */
+const SCENE = (() => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#16325c"/><stop offset=".38" stop-color="#3f6fa3"/>
+        <stop offset=".62" stop-color="#e08d63"/><stop offset=".82" stop-color="#f2c98a"/>
+      </linearGradient>
+      <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2b5f8b"/><stop offset="1" stop-color="#132b42"/>
+      </linearGradient>
+    </defs>
+    <rect width="480" height="640" fill="url(#sky)"/>
+    <circle cx="336" cy="168" r="64" fill="#ffd166"/>
+    <circle cx="336" cy="168" r="94" fill="#ffd166" opacity=".16"/>
+    <path d="M0 430 L96 330 L170 405 L250 340 L350 445 L0 445 Z" fill="#2a3c5a"/>
+    <path d="M0 452 L120 372 L232 460 L340 400 L480 470 L480 640 L0 640 Z" fill="#1b2940"/>
+    <rect y="452" width="480" height="188" fill="url(#sea)"/>
+    <path d="M0 492 Q70 484 140 494 T280 492 T420 494 T480 490" stroke="#7fb3d5" stroke-width="3" fill="none" opacity=".5"/>
+    <path d="M0 548 Q80 540 160 550 T320 548 T480 546" stroke="#5f93b8" stroke-width="2" fill="none" opacity=".3"/>
+    <path d="M64 452 q12 -46 46 -54 q-22 12 -18 54 Z" fill="#101d2f"/>
+    <path d="M18 458 q18 -30 50 -34 q-26 10 -24 34 Z" fill="#101d2f"/>
+    <path d="M150 250 q14 -11 28 0 M200 286 q12 -9 24 0 M92 300 q10 -8 20 0"
+      stroke="#dfe9f5" stroke-width="2.5" fill="none" opacity=".65"/>
+    <rect x="360" y="404" width="66" height="34" fill="#0d1826"/>
+    <path d="M360 404 L393 384 L426 404 Z" fill="#122033"/>
+  </svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+})();;
+
+/* ============ 关卡 ============ */
+const LEVELS = [
+  { cols: 3, rows: 4, hand: 3 },
+  { cols: 4, rows: 5, hand: 3 },
+  { cols: 5, rows: 6, hand: 4 },
+];
+
+const $ = id => document.getElementById(id);
+let S = null;
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 1500);
+}
+function showModal(html) { $('modal').innerHTML = html; $('modalBg').classList.add('show'); }
+function closeModal() { $('modalBg').classList.remove('show'); }
+
+function opposite(e) { return e === 'tab' ? 'blank' : e === 'blank' ? 'tab' : 'flat'; }
+function randEdge(rng) { return rng() < 0.5 ? 'tab' : 'blank'; }
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ============ 生成 ============ */
+function generate(levelIdx) {
+  const cfg = LEVELS[levelIdx];
+  const rng = mulberry32(1000 + levelIdx * 77);
+  const cols = cfg.cols, rows = cfg.rows;
+  const edges = [];
+  for (let r = 0; r < rows; r++) {
+    edges[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const e = {};
+      e.top = r === 0 ? 'flat' : opposite(edges[r - 1][c].bottom);
+      e.left = c === 0 ? 'flat' : opposite(edges[r][c - 1].right);
+      e.right = c === cols - 1 ? 'flat' : randEdge(rng);
+      e.bottom = r === rows - 1 ? 'flat' : randEdge(rng);
+      edges[r][c] = e;
+    }
+  }
+  const total = cols * rows;
+
+  // 放置顺序：从左上角开始的行优先生长（保证邻接）
+  const growth = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) growth.push({ r, c, id: r * cols + c });
+
+  // 叠堆：按放置顺序分配到 3 个堆，堆顶 = 最早需要的碎片
+  const STACKS = 3;
+  const stacks = Array.from({ length: STACKS }, () => []);
+  growth.forEach((p, i) => stacks[i % STACKS].push(p));
+  return {
+    cols, rows, edges, total, growth, stacks,
+    handCap: cfg.hand,
+    placed: new Set(), hand: [], selected: null, swaps: 3,
+    start: Date.now(), cell: 0, picW: 0, picH: 0, done: false, dead: false,
+  };
+}
+
+/* ============ 渲染 ============ */
+function layout() {
+  const frame = $('frame');
+  const availW = Math.min(360, frame.parentNode.clientWidth || 360);
+  const availH = Math.max(220, Math.floor(window.innerHeight * 0.50));
+  const cell = Math.floor(Math.min((availW - 2) / S.cols, availH / S.rows));
+  const w = cell * S.cols, h = cell * S.rows;
+  S.cell = cell; S.picW = w; S.picH = h;
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.innerHTML = '<div class="ghost"></div>';
+  frame.querySelector('.ghost').style.backgroundImage = `url("${SCENE}")`;
+
+  for (let r = 0; r < S.rows; r++) {
+    for (let c = 0; c < S.cols; c++) {
+      const id = r * S.cols + c;
+      if (S.placed.has(id)) continue;
+      const d = document.createElement('div');
+      d.className = 'cell'; d.dataset.r = r; d.dataset.c = c;
+      d.style.left = c * cell + 'px'; d.style.top = r * cell + 'px';
+      d.style.width = d.style.height = cell + 'px';
+      d.style.display = 'none'; // 只有 frontier 显示
+      frame.appendChild(d);
+    }
+  }
+  // 已放置的拼图块
+  S.placed.forEach(id => {
+    const r = Math.floor(id / S.cols), c = id % S.cols;
+    frame.appendChild(makePieceEl(r, c, cell, id));
+  });
+  renderFrontier();
+  $('prog').textContent = S.placed.size + '/' + S.total;
+}
+
+function makePieceEl(r, c, cell, id) {
+  const d = document.createElement('div');
+  d.className = 'placed'; d.dataset.id = id;
+  d.style.left = c * cell + 'px'; d.style.top = r * cell + 'px';
+  d.style.width = d.style.height = cell + 'px';
+  d.style.backgroundImage = `url("${SCENE}")`;
+  d.style.backgroundSize = `${S.picW}px ${S.picH}px`;
+  d.style.backgroundPosition = `${-c * cell}px ${-r * cell}px`;
+  addEdges(d, r, c, cell, 1);
+  return d;
+}
+
+function addEdges(el, r, c, cell, scale) {
+  const e = S.edges[r][c];
+  const size = Math.max(5, Math.round(cell * 0.16));
+  const put = (side, cls) => {
+    const s = document.createElement('div');
+    s.className = 'edge ' + cls;
+    s.style.width = size + 'px'; s.style.height = size + 'px';
+    if (side === 'top') { s.style.left = (cell - size) / 2 + 'px'; s.style.top = -size / 2 + 'px'; }
+    if (side === 'bottom') { s.style.left = (cell - size) / 2 + 'px'; s.style.bottom = -size / 2 + 'px'; }
+    if (side === 'left') { s.style.top = (cell - size) / 2 + 'px'; s.style.left = -size / 2 + 'px'; }
+    if (side === 'right') { s.style.top = (cell - size) / 2 + 'px'; s.style.right = -size / 2 + 'px'; }
+    el.appendChild(s);
+  };
+  ['top', 'bottom', 'left', 'right'].forEach(side => {
+    if (e[side] === 'tab') put(side, 'tab');
+    else if (e[side] === 'blank') put(side, 'blank');
+  });
+}
+
+function renderFrontier() {
+  const wrap = $('frame');
+  const frontier = new Set();
+  if (S.placed.size === 0) {
+    // 第一块可以放任意位置；高亮四个角提示
+    [[0, 0], [0, S.cols - 1], [S.rows - 1, 0], [S.rows - 1, S.cols - 1]].forEach(([r, c]) => frontier.add(r * S.cols + c));
+  } else {
+    S.placed.forEach(id => {
+      const r = Math.floor(id / S.cols), c = id % S.cols;
+      [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
+        if (nr < 0 || nc < 0 || nr >= S.rows || nc >= S.cols) return;
+        if (!S.placed.has(nr * S.cols + nc)) frontier.add(nr * S.cols + nc);
+      });
+    });
+  }
+  wrap.querySelectorAll('.cell').forEach(cell => {
+    const id = +cell.dataset.r * S.cols + +cell.dataset.c;
+    const on = frontier.has(id);
+    cell.style.display = on ? 'block' : 'none';
+    cell.classList.toggle('frontier', on);
+  });
+}
+
+/* ============ 堆 / 手牌 ============ */
+function renderPile() {
+  const pile = $('pile');
+  pile.innerHTML = '';
+  let total = 0;
+  S.stacks.forEach((st, si) => {
+    total += st.length;
+    const col = document.createElement('div');
+    col.className = 'stack';
+    const show = Math.min(5, st.length);
+    for (let k = 0; k < show; k++) {
+      const p = st[k];
+      const m = document.createElement('div');
+      m.className = 'mini' + (k === 0 ? ' top' : '');
+      m.style.backgroundImage = `url("${SCENE}")`;
+      m.style.backgroundSize = `${S.picW}px ${S.picH}px`;
+      m.style.backgroundPosition = `${-p.c * S.cell}px ${-p.r * S.cell}px`;
+      // 底部对齐、层叠
+      m.style.bottom = (k * 11) + 'px';
+      if (k === 0) m.addEventListener('click', () => pickTop(si));
+      col.appendChild(m);
+    }
+    if (st.length) {
+      const cnt = document.createElement('div');
+      cnt.className = 'stackCount'; cnt.textContent = st.length;
+      col.appendChild(cnt);
+    }
+    pile.appendChild(col);
+  });
+  $('pileLeft').textContent = '剩余 ' + total;
+}
+
+function renderHand() {
+  const hand = $('hand');
+  hand.innerHTML = '';
+  for (let i = 0; i < S.handCap; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const p = S.hand[i];
+    if (p) {
+      slot.classList.add('filled');
+      if (S.selected === p.id) slot.classList.add('selected');
+      const m = document.createElement('div');
+      m.className = 'mini';
+      m.style.backgroundImage = `url("${SCENE}")`;
+      m.style.backgroundSize = `${S.picW}px ${S.picH}px`;
+      m.style.backgroundPosition = `${-p.c * S.cell}px ${-p.r * S.cell}px`;
+      addEdges(m, p.r, p.c, 52, .8);
+      slot.appendChild(m);
+      slot.addEventListener('click', () => selectHand(p.id));
+    } else {
+      slot.textContent = '空';
+    }
+    hand.appendChild(slot);
+  }
+  $('handCap').textContent = S.hand.length + '/' + S.handCap;
+  $('swapCount').textContent = S.swaps;
+}
+
+/* ============ 交互 ============ */
+function pickTop(si) {
+  if (!S || S.done) return;
+  const st = S.stacks[si];
+  if (!st.length) return;
+  if (S.hand.length >= S.handCap) { toast('手牌满了，先放一块到拼图板上'); return; }
+  const p = st.shift();
+  S.hand.push(p);
+  S.selected = p.id;
+  renderPile(); renderHand(); renderFrontier();
+  checkStuck();
+}
+
+function selectHand(id) {
+  if (S.done) return;
+  if (S.selected === id) { S.selected = null; renderHand(); return; }
+  S.selected = id;
+  renderHand();
+  const p = S.hand.find(x => x.id === id);
+  if (p) toast('已选中，点拼图板上它该在的位置');
+}
+
+function cellId(r, c) { return r * S.cols + c; }
+
+function placeSelected(r, c) {
+  if (!S || S.done) return;
+  if (S.selected == null) { toast('先在下面选中一块拼图'); return; }
+  const idx = S.hand.findIndex(x => x.id === S.selected);
+  if (idx < 0) return;
+  const p = S.hand[idx];
+  if (p.r !== r || p.c !== c) {
+    const cell = $('frame').querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if (cell) { cell.classList.add('bad'); setTimeout(() => cell.classList.remove('bad'), 320); }
+    toast('位置不对：看看这块的图案和凸凹');
+    return;
+  }
+  if (S.placed.size > 0 && !isAdjacent(r, c)) { toast('先把它接到已拼好的部分上'); return; }
+  // 放置
+  S.hand.splice(idx, 1);
+  S.selected = null;
+  S.placed.add(cellId(r, c));
+  layout(); renderHand(); renderPile();
+  checkWin();
+}
+
+function isAdjacent(r, c) {
+  return [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].some(([nr, nc]) => {
+    if (nr < 0 || nc < 0 || nr >= S.rows || nc >= S.cols) return false;
+    return S.placed.has(nr * S.cols + nc);
+  });
+}
+
+function isPlaceable(p) {
+  return S.placed.size === 0 || isAdjacent(p.r, p.c);
+}
+
+function checkStuck() {
+  if (S.hand.length < S.handCap) return;
+  if (S.hand.some(isPlaceable)) return;
+  S.dead = true;
+  showModal(
+    '<h2>手牌满了</h2><p>手里这几块都接不到已拼好的部分。可以换一手，把一块放回碎片堆顶。</p>' +
+    '<div class="btns"><button class="primary" id="mSwap">换一手（剩 ' + S.swaps + '）</button>' +
+    '<button id="mRestart">重开</button></div>'
+  );
+  $('mSwap').onclick = () => { closeModal(); swapOne(); };
+  $('mRestart').onclick = () => { closeModal(); restart(); };
+}
+
+function swapOne() {
+  if (S.swaps <= 0) { toast('换一手次数用完了'); return; }
+  if (!S.hand.length) { toast('手牌是空的'); return; }
+  S.swaps--;
+  const p = S.hand.shift();
+  // 放回最短的堆顶
+  let si = 0;
+  for (let i = 1; i < S.stacks.length; i++) if (S.stacks[i].length < S.stacks[si].length) si = i;
+  S.stacks[si].unshift(p);
+  S.dead = false; S.selected = null;
+  renderPile(); renderHand(); updateHud();
+  toast('已把一块放回堆顶');
+}
+
+function checkWin() {
+  if (S.placed.size !== S.total) return;
+  S.done = true;
+  const sec = Math.round((Date.now() - S.start) / 1000);
+  showModal(
+    '<h2>拼好了！</h2>' +
+    '<div style="width:240px;height:180px;margin:8px auto;border-radius:10px;background-image:url(\'' + SCENE + '\');' +
+    'background-size:cover;box-shadow:0 8px 30px rgba(0,0,0,.5)"></div>' +
+    '<p>用时 ' + Math.floor(sec / 60) + ' 分 ' + (sec % 60) + ' 秒 · ' + S.total + ' 块</p>' +
+    '<div class="btns"><button class="primary" id="mNext">下一关</button><button id="mAgain">重玩</button></div>'
+  );
+  $('mNext').onclick = () => { closeModal(); startLevel(Math.min(LEVELS.length - 1, S.level + 1)); };
+  $('mAgain').onclick = () => { closeModal(); restart(); };
+}
+
+function updateHud() {
+  $('prog').textContent = S.placed.size + '/' + S.total;
+  $('handCap').textContent = S.hand.length + '/' + S.handCap;
+  $('swapCount').textContent = S.swaps;
+  $('lvNum').textContent = S.level + 1;
+}
+
+function startLevel(idx) {
+  S = generate(idx);
+  S.level = idx;
+  closeModal();
+  layout(); renderPile(); renderHand();
+  updateHud();
+  $('hand').addEventListener('click', e => e.stopPropagation());
+  $('frame').onclick = e => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    placeSelected(+cell.dataset.r, +cell.dataset.c);
+  };
+}
+
+function restart() { startLevel(S.level); }
+
+function hint() {
+  if (!S || S.done) return;
+  if (S.selected != null) {
+    const p = S.hand.find(x => x.id === S.selected);
+    if (!p) return;
+    const cell = $('frame').querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`);
+    if (cell) {
+      cell.classList.add('hint');
+      setTimeout(() => cell.classList.remove('hint'), 1200);
+    }
+    toast('这块该放在高亮的格子上');
+    return;
+  }
+  toast('先在图板上选中手牌，再点提示');
+}
+
+$('btnHint').onclick = hint;
+$('btnSwap').onclick = swapOne;
+$('btnRestart').onclick = restart;
+
+/* ============ 计时 ============ */
+setInterval(() => {
+  if (!S || S.done) return;
+  const sec = Math.round((Date.now() - S.start) / 1000);
+  $('timer').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+}, 500);
+
+/* ============ 调试接口 ============ */
+window.__v3 = {
+  startLevel,
+  state: () => S,
+  pickTop,
+  selectHand,
+  placeSelected,
+  autoSolve() {
+    const order = S.growth.slice();
+    for (const p of order) {
+      if (S.placed.has(cellId(p.r, p.c))) continue;
+      // 该碎片是否已在手牌
+      let hand = S.hand.find(x => x.r === p.r && x.c === p.c);
+      if (!hand) {
+        // 它在哪一个堆？把上面的先拿走
+        for (let si = 0; si < S.stacks.length; si++) {
+          const st = S.stacks[si];
+          const at = st.findIndex(x => x.r === p.r && x.c === p.c);
+          if (at >= 0) {
+            while (S.stacks[si][0] !== st.find(x => x.r === p.r && x.c === p.c)) {
+              if (S.hand.length >= S.handCap) {
+                // 手牌满：先放一块到板上
+                const any = S.hand.find(isPlaceable);
+                if (!any) return false;
+                S.selected = any.id;
+                placeSelected(any.r, any.c);
+                if (S.done) return true;
+              }
+              pickTop(si);
+            }
+            pickTop(si);
+            break;
+          }
+        }
+      }
+      hand = S.hand.find(x => x.r === p.r && x.c === p.c);
+      if (!hand) return false;
+      S.selected = hand.id;
+      placeSelected(p.r, p.c);
+      if (S.done) return true;
+    }
+    return S.done;
+  }
+};
+
+const lvParam = parseInt((location.search.match(/[?&]lv=(\d+)/) || [])[1] || '1', 10) - 1;
+startLevel(Math.max(0, Math.min(LEVELS.length - 1, lvParam)));
+</script>
+</body>
+</html>
