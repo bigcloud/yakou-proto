@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161b24'/%3E%3Ccircle cx='24' cy='32' r='9' fill='%23e8534a'/%3E%3Crect x='34' y='23' width='18' height='18' rx='4' fill='%234f8cf7'/%3E%3C/svg%3E"><title>咬合消除 · 纯逻辑原型 v2.3</title><style>:root{--bg:#0e1117;--card:#161b24;--card2:#1d2431;--line:#2a3242;--text:#e9ecf3;--dim:#8d97ab;--accent:#ffb86b;--ok:#6ee7b7;--bad:#f87171;--safe-b:env(safe-area-inset-bottom,0px);}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}html,body{height:100%;}body{margin:0;background:radial-gradient(900px 600px at 50% -10%,#1a2130 0%,var(--bg) 60%);color:var(--text);font:14px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;user-select:none;overflow:hidden;}.app{height:100dvh;max-width:540px;margin:0 auto;padding:6px 8px calc(6px + var(--safe-b));display:flex;flex-direction:column;gap:6px;}.topbar{flex:none;display:flex;align-items:center;gap:6px;height:38px;}.lvtag{font-weight:600;font-size:14px;white-space:nowrap;}.lvtag b{color:var(--accent);}.lvtag .rule{font-weight:400;font-size:11px;color:var(--dim);margin-left:6px;}.spacer{flex:1;}.stat{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap;}button{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:5px 10px;cursor:pointer;transition:.15s;line-height:1.2;}button:active{transform:scale(.97);}button[disabled]{opacity:.38;cursor:not-allowed;}button.small{padding:4px 8px;font-size:12px;}button.primary{background:var(--accent);border-color:var(--accent);color:#241708;font-weight:700;}select{font:inherit;font-size:12px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:4px 6px;max-width:120px;}em{font-style:normal;opacity:.75;font-size:11px;}.stage{flex:1;min-height:0;position:relative;}.board-wrap{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#151b27,#0f141d);border:1px solid var(--line);}.board{position:absolute;left:0;top:0;width:360px;height:520px;transform-origin:top left;}.piece{position:absolute;border-radius:12px;cursor:pointer;background:color-mix(in srgb,var(--c) 16%,#161b25);border:2px solid color-mix(in srgb,var(--c) 85%,#000);box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .15s,filter .15s,box-shadow .15s;}.piece .bump{position:absolute;top:-11%;left:50%;transform:translateX(-50%);width:44%;height:22%;border-radius:6px;background:var(--c);border:2px solid rgba(0,0,0,.32);}.piece.blank .bump{top:4%;height:24%;border-radius:5px;background:rgba(0,0,0,.5);width:50%;border:none;box-shadow:inset 0 3px 4px rgba(0,0,0,.7);}.piece .ori{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:10px;font-weight:700;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.85);pointer-events:none;line-height:1;}body:not(.debug) .piece.blocked .ori{visibility:hidden;}.piece{font-size:48px;}.piece .glyph{font-size:0.58em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none;}.piece{font-size:48px;}.piece .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:9px;color:#c9d2e3;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;line-height:1.4;}.piece .dbg{display:none;position:absolute;left:2px;top:1px;font-size:8px;color:#fff;opacity:.85;}.piece.blocked{filter:grayscale(.9) brightness(.62);cursor:default;}body:not(.debug) .piece.blocked{background:#212836;border-color:#333d4f;box-shadow:none;opacity:.95;}body:not(.debug) .piece.blocked .glyph{visibility:hidden;}body:not(.debug) .piece.blocked .bump{background:#333d4f;border-color:#333d4f;}body:not(.debug) .piece.blocked .lock{display:block;}body.debug .piece .dbg{display:block;}body.debug .piece.blocked .glyph{visibility:visible;opacity:.5;}.piece[data-color="red"]{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="blue"]{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="green"]{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 2px,transparent 2px 7px);}.piece[data-color="yellow"]{background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.5px);background-size:6px 6px;}.piece[data-color="purple"]{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px),repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px);}.piece:not(.blocked):hover{transform:translateY(-2px);}.piece.hint{animation:hintPulse .7s infinite alternate;z-index:99999 !important;}@keyframes hintPulse{from{box-shadow:0 0 0 0 rgba(255,184,107,0)}to{box-shadow:0 0 0 5px rgba(255,184,107,.8)}}.piece.shake{animation:shake .3s;}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.piece.picked{transform:scale(.55) translateY(-24px);opacity:0;pointer-events:none;}.piece.unlocked{animation:unlock .5s;}@keyframes unlock{0%{box-shadow:0 0 0 0 rgba(110,231,183,.9)}100%{box-shadow:0 0 0 9px rgba(110,231,183,0)}}.progress-card{position:absolute;right:8px;top:8px;width:112px;padding:6px;border-radius:11px;background:rgba(13,17,24,.72);border:1px solid var(--line);backdrop-filter:blur(3px);}.progress-card .ptitle{font-size:10px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:4px;}.progress-grid{display:grid;gap:2px;grid-template-columns:repeat(6,1fr);}.pcell{aspect-ratio:1;border-radius:2px;background:#252d3c;transition:.2s;}.pcell.on{background:var(--ok);box-shadow:0 0 5px rgba(110,231,183,.5);}.pcell.pop{animation:pop .4s;}@keyframes pop{0%{transform:scale(.2)}60%{transform:scale(1.6)}100%{transform:scale(1)}}.bottom{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center;}.tray{display:flex;gap:5px;justify-content:center;position:relative;}.bite-burst{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:rgba(110,231,183,.85);transform:translate(-50%,-50%);pointer-events:none;z-index:5;animation:burst .45s forwards;}@keyframes burst{0%{width:12px;height:12px;opacity:.95}100%{width:130px;height:130px;opacity:0}}.slot{width:46px;height:46px;border-radius:10px;border:2px dashed #39435a;background:#121823;display:flex;align-items:center;justify-content:center;position:relative;transition:.15s;}.slot.filled{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 26%,#151a24);}.slot .glyph{font-size:20px;color:#fff;}.slot .mark{position:absolute;right:4px;top:2px;font-size:9px;color:rgba(255,255,255,.7);}.slot .need{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.72);white-space:nowrap;line-height:1.1;}.slot.ready{border-color:#6ee7b7;box-shadow:0 0 10px rgba(110,231,183,.42);}.slot.ready .need{color:#6ee7b7;}.tray.bite{animation:trayBite .4s;}@keyframes trayBite{0%{transform:scale(1)}35%{transform:scale(1.07)}100%{transform:scale(1)}}.recap{background:#10151e;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:#c7cfdd;text-align:left;line-height:1.7;margin:8px 0;}.slot.flash{animation:flash .45s;}@keyframes flash{0%{box-shadow:0 0 0 0 rgba(110,231,183,.95)}100%{box-shadow:0 0 0 16px rgba(110,231,183,0)}}.tray.warn .slot:not(.filled){border-color:#7a5b33;}.tray.danger .slot:not(.filled){border-color:#b34a4a;box-shadow:0 0 8px rgba(179,74,74,.3);}.actions{display:flex;gap:6px;justify-content:center;height:42px;align-items:stretch;width:100%;}.actions button{flex:1;max-width:120px;display:flex;align-items:center;justify-content:center;gap:3px;font-size:13px;}.debug-panel{position:fixed;left:0;right:0;bottom:0;max-height:62vh;overflow:auto;z-index:800;background:#11161f;border-top:1px solid var(--line);padding:12px 14px calc(16px + var(--safe-b));transform:translateY(102%);transition:transform .22s;font-size:12.5px;color:#c7cfdd;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.55);}.debug-panel.show{transform:translateY(0);}.debug-panel h3{margin:10px 0 6px;font-size:12px;color:var(--accent);}.debug-panel h3:first-child{margin-top:0;}.row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dashed #222a38;}.row span:first-child{color:var(--dim);}.debug-panel button{margin:6px 6px 0 0;font-size:12px;}.dbg-close{position:absolute;right:10px;top:8px;}.modal-bg{position:fixed;inset:0;background:rgba(4,6,10,.74);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}.modal-bg.show{display:flex;}.modal{width:min(92vw,380px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);}.modal h2{margin:0 0 6px;font-size:19px;}.modal p{margin:4px 0 14px;color:var(--dim);font-size:13px;line-height:1.6;}.modal .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}.modal button{min-width:96px;}.toast{position:fixed;left:50%;top:16%;transform:translate(-50%,-8px);opacity:0;pointer-events:none;background:#0b0e14;border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:10px;transition:.18s;z-index:1200;font-size:13px;max-width:80vw;text-align:center;}.toast.show{opacity:1;transform:translate(-50%,0);}.coach{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%);background:rgba(10,13,19,.92);border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:13px;z-index:700;max-width:88vw;text-align:center;display:none;}.coach.show{display:block;}@media (max-width:430px){#lvSelect{display:none;}#moves{display:none;}.lvtag .rule{display:none;}.topbar{gap:4px;overflow:hidden;}.stat{font-size:11px;}.progress-card{width:96px;right:6px;top:6px;}.slot{width:42px;height:42px;}}@media (max-height:640px){.progress-card{width:92px;}.slot{width:40px;height:40px;}.actions{height:38px;}}</style></head><body><div class="app"><header class="topbar"><button class="small" id="prevLv" aria-label="上一关">‹</button><div class="lvtag">第 <b id="lvNum">1</b> 关<span class="rule" id="lvRule">同形同色 · 一凸一凹</span></div><button class="small" id="nextLv" aria-label="下一关">›</button><select id="lvSelect" aria-label="选择关卡"></select><div class="spacer"></div><span class="stat" id="timer">00:00</span><span class="stat" id="moves">0 步</span><button class="small" id="btnMute" aria-label="音效开关">🔊</button><button class="small" id="btnRulesTop" aria-label="规则说明">?</button><button class="small" id="btnDebug" aria-label="调试面板">⚙</button></header><main class="stage"><div class="board-wrap" id="boardWrap"><div class="board" id="board" aria-label="盘面"></div><div class="progress-card"><div class="ptitle"><span>拼图进度</span><span id="progText">0/12</span></div><div class="progress-grid" id="progressGrid"></div></div></div></main><footer class="bottom"><div class="tray" id="tray"></div><div class="actions"><button id="btnHint">提示</button><button id="btnUndo">撤回 <em id="undoCount">2</em></button><button id="btnShuffle">洗牌 <em id="shuffleCount">1</em></button><button id="btnRestart">重开</button></div></footer></div><div class="debug-panel" id="debugPanel"><button class="small dbg-close" id="btnDebugClose">收起</button><h3>本关参数</h3><div class="row"><span>N / 层数 / 类型数</span><b id="dN">-</b></div><div class="row"><span>卡槽 / 初始可点 K</span><b id="dK">-</b></div><div class="row"><span>遮挡率 / 层极差</span><b id="dBlock">-</b></div><div class="row"><span>当前剩余 / 卡槽峰值</span><b id="dLeft">-</b></div><h3>当前盘可解性（规划机器人）</h3><div class="row"><span>可解率（60 次 rollout）</span><b id="dSolve">-</b></div><h3>工具</h3><button id="btnAuto">自动通关</button><button id="btnCheck">校验当前盘</button><button id="btnExport">导出埋点</button><button id="btnRules">规则说明</button><button id="btnDeadlock">制造死局</button><button id="btnRescueTest">救援回归</button><h3>本次会话</h3><div class="row"><span>事件数 / 首次咬合</span><b id="dEvents">-</b></div><div class="row"><span>卡槽峰值 / 死局次数</span><b id="dPeak">-</b></div><div class="row"><span>救援回归（5 样本）</span><b id="dRescue">-</b></div></div><div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div><div class="coach" id="coach"></div><script>(function (root, factory) {
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161b24'/%3E%3Ccircle cx='24' cy='32' r='9' fill='%23e8534a'/%3E%3Crect x='34' y='23' width='18' height='18' rx='4' fill='%234f8cf7'/%3E%3C/svg%3E"><title>咬合消除 · 纯逻辑原型 v2.3</title><style>:root{--bg:#0e1117;--card:#161b24;--card2:#1d2431;--line:#2a3242;--text:#e9ecf3;--dim:#8d97ab;--accent:#ffb86b;--ok:#6ee7b7;--bad:#f87171;--safe-b:env(safe-area-inset-bottom,0px);}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}html,body{height:100%;}body{margin:0;background:radial-gradient(900px 600px at 50% -10%,#1a2130 0%,var(--bg) 60%);color:var(--text);font:14px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;user-select:none;overflow:hidden;}.app{height:100dvh;max-width:540px;margin:0 auto;padding:6px 8px calc(6px + var(--safe-b));display:flex;flex-direction:column;gap:6px;}.topbar{flex:none;display:flex;align-items:center;gap:6px;height:38px;}.lvtag{font-weight:600;font-size:14px;white-space:nowrap;}.lvtag b{color:var(--accent);}.lvtag .rule{font-weight:400;font-size:11px;color:var(--dim);margin-left:6px;}.spacer{flex:1;}.stat{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap;}button{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:5px 10px;cursor:pointer;transition:.15s;line-height:1.2;}button:active{transform:scale(.97);}button[disabled]{opacity:.38;cursor:not-allowed;}button.small{padding:4px 8px;font-size:12px;}button.primary{background:var(--accent);border-color:var(--accent);color:#241708;font-weight:700;}select{font:inherit;font-size:12px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:4px 6px;max-width:120px;}em{font-style:normal;opacity:.75;font-size:11px;}.stage{flex:1;min-height:0;position:relative;}.board-wrap{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#151b27,#0f141d);border:1px solid var(--line);}.board{position:absolute;left:0;top:0;width:360px;height:520px;transform-origin:top left;}.piece{position:absolute;border-radius:12px;cursor:pointer;background:color-mix(in srgb,var(--c) 16%,#161b25);border:2px solid color-mix(in srgb,var(--c) 85%,#000);box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .15s,filter .15s,box-shadow .15s;}.piece .bump{position:absolute;top:-11%;left:50%;transform:translateX(-50%);width:44%;height:22%;border-radius:6px;background:var(--c);border:2px solid rgba(0,0,0,.32);}.piece.blank .bump{top:4%;height:24%;border-radius:5px;background:rgba(0,0,0,.5);width:50%;border:none;box-shadow:inset 0 3px 4px rgba(0,0,0,.7);}.piece .ori{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.85);pointer-events:none;line-height:1;}body:not(.debug) .piece.blocked .ori{visibility:hidden;}.piece{font-size:48px;}.piece .glyph{font-size:0.58em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none;}.piece{font-size:48px;}.piece .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:9px;color:#c9d2e3;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;line-height:1.4;}.piece .dbg{display:none;position:absolute;left:2px;top:1px;font-size:8px;color:#fff;opacity:.85;}.piece.blocked{filter:grayscale(.9) brightness(.62);cursor:default;}body:not(.debug) .piece.blocked{background:#212836;border-color:#333d4f;box-shadow:none;opacity:.95;}body:not(.debug) .piece.blocked .glyph{visibility:hidden;}body:not(.debug) .piece.blocked .bump{background:#4a5568;border-color:#4a5568;}body:not(.debug) .piece.blocked .lock{display:block;}body.peek:not(.debug) .piece.blocked{background:color-mix(in srgb,var(--c) 30%,#161b25);border-color:var(--c);opacity:.92;}body.peek:not(.debug) .piece.blocked .glyph{visibility:visible;opacity:.8;}body.peek:not(.debug) .piece.blocked .bump{background:var(--c);border-color:rgba(0,0,0,.3);}body.debug .piece .dbg{display:block;}body.debug .piece.blocked .glyph{visibility:visible;opacity:.5;}.piece[data-color="red"]{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="blue"]{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="green"]{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 2px,transparent 2px 7px);}.piece[data-color="yellow"]{background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.5px);background-size:6px 6px;}.piece[data-color="purple"]{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px),repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px);}.piece:not(.blocked):hover{transform:translateY(-2px);}.piece.hint{animation:hintPulse .7s infinite alternate;z-index:99999 !important;}@keyframes hintPulse{from{box-shadow:0 0 0 0 rgba(255,184,107,0)}to{box-shadow:0 0 0 5px rgba(255,184,107,.8)}}.piece.shake{animation:shake .3s;}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.piece.picked{transform:scale(.55) translateY(-24px);opacity:0;pointer-events:none;}.piece.unlocked{animation:unlock .5s;}@keyframes unlock{0%{box-shadow:0 0 0 0 rgba(110,231,183,.9)}100%{box-shadow:0 0 0 9px rgba(110,231,183,0)}}.progress-card{position:absolute;right:8px;top:8px;width:112px;padding:6px;border-radius:11px;background:rgba(13,17,24,.72);border:1px solid var(--line);backdrop-filter:blur(3px);}.progress-card .ptitle{font-size:10px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:4px;}.progress-grid{display:grid;gap:2px;grid-template-columns:repeat(6,1fr);}.pcell{aspect-ratio:1;border-radius:2px;background:#252d3c;transition:.2s;}.pcell.on{background:var(--ok);box-shadow:0 0 5px rgba(110,231,183,.5);}.pcell.pop{animation:pop .4s;}@keyframes pop{0%{transform:scale(.2)}60%{transform:scale(1.6)}100%{transform:scale(1)}}.bottom{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center;}.tray{display:flex;gap:5px;justify-content:center;position:relative;}.bite-burst{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:rgba(110,231,183,.85);transform:translate(-50%,-50%);pointer-events:none;z-index:5;animation:burst .45s forwards;}@keyframes burst{0%{width:12px;height:12px;opacity:.95}100%{width:130px;height:130px;opacity:0}}.slot{width:46px;height:46px;border-radius:10px;border:2px dashed #39435a;background:#121823;display:flex;align-items:center;justify-content:center;position:relative;transition:.15s;}.slot.filled{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 26%,#151a24);}.slot .glyph{font-size:20px;color:#fff;}.slot .mark{position:absolute;right:4px;top:2px;font-size:9px;color:rgba(255,255,255,.7);}.slot .need{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.72);white-space:nowrap;line-height:1.1;}.slot.ready{border-color:#6ee7b7;box-shadow:0 0 10px rgba(110,231,183,.42);}.slot.ready .need{color:#6ee7b7;}.tray.bite{animation:trayBite .4s;}@keyframes trayBite{0%{transform:scale(1)}35%{transform:scale(1.07)}100%{transform:scale(1)}}.recap{background:#10151e;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:#c7cfdd;text-align:left;line-height:1.7;margin:8px 0;}.slot.flash{animation:flash .45s;}@keyframes flash{0%{box-shadow:0 0 0 0 rgba(110,231,183,.95)}100%{box-shadow:0 0 0 16px rgba(110,231,183,0)}}.tray.warn .slot:not(.filled){border-color:#7a5b33;}.tray.danger .slot:not(.filled){border-color:#b34a4a;box-shadow:0 0 8px rgba(179,74,74,.3);}.actions{display:flex;gap:6px;justify-content:center;height:42px;align-items:stretch;width:100%;}.actions button{flex:1;max-width:120px;display:flex;align-items:center;justify-content:center;gap:2px;font-size:12px;padding:5px 6px;}.debug-panel{position:fixed;left:0;right:0;bottom:0;max-height:62vh;overflow:auto;z-index:800;background:#11161f;border-top:1px solid var(--line);padding:12px 14px calc(16px + var(--safe-b));transform:translateY(102%);transition:transform .22s;font-size:12.5px;color:#c7cfdd;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.55);}.debug-panel.show{transform:translateY(0);}.debug-panel h3{margin:10px 0 6px;font-size:12px;color:var(--accent);}.debug-panel h3:first-child{margin-top:0;}.row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dashed #222a38;}.row span:first-child{color:var(--dim);}.debug-panel button{margin:6px 6px 0 0;font-size:12px;}.dbg-close{position:absolute;right:10px;top:8px;}.modal-bg{position:fixed;inset:0;background:rgba(4,6,10,.74);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}.modal-bg.show{display:flex;}.modal{width:min(92vw,380px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);}.modal h2{margin:0 0 6px;font-size:19px;}.modal p{margin:4px 0 14px;color:var(--dim);font-size:13px;line-height:1.6;}.modal .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}.modal button{min-width:96px;}.toast{position:fixed;left:50%;top:16%;transform:translate(-50%,-8px);opacity:0;pointer-events:none;background:#0b0e14;border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:10px;transition:.18s;z-index:1200;font-size:13px;max-width:80vw;text-align:center;}.toast.show{opacity:1;transform:translate(-50%,0);}.coach{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%);background:rgba(10,13,19,.92);border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:13px;z-index:700;max-width:88vw;text-align:center;display:none;}.coach.show{display:block;}@media (max-width:430px){#lvSelect{display:none;}#moves{display:none;}.lvtag .rule{display:none;}.topbar{gap:4px;overflow:hidden;}.stat{font-size:11px;}.progress-card{width:96px;right:6px;top:6px;}.slot{width:42px;height:42px;}}@media (max-height:640px){.progress-card{width:92px;}.slot{width:40px;height:40px;}.actions{height:38px;}}</style></head><body><div class="app"><header class="topbar"><button class="small" id="prevLv" aria-label="上一关">‹</button><div class="lvtag">第 <b id="lvNum">1</b> 关<span class="rule" id="lvRule">同形同色 · 一凸一凹</span></div><button class="small" id="nextLv" aria-label="下一关">›</button><select id="lvSelect" aria-label="选择关卡"></select><div class="spacer"></div><span class="stat" id="timer">00:00</span><span class="stat" id="moves">0 步</span><button class="small" id="btnMute" aria-label="音效开关">🔊</button><button class="small" id="btnRulesTop" aria-label="规则说明">?</button><button class="small" id="btnDebug" aria-label="调试面板">⚙</button></header><main class="stage"><div class="board-wrap" id="boardWrap"><div class="board" id="board" aria-label="盘面"></div><div class="progress-card"><div class="ptitle"><span>拼图进度</span><span id="progText">0/12</span></div><div class="progress-grid" id="progressGrid"></div></div></div></main><footer class="bottom"><div class="tray" id="tray"></div><div class="actions"><button id="btnHint">提示</button><button id="btnUndo">撤回 <em id="undoCount">2</em></button><button id="btnShuffle">洗牌 <em id="shuffleCount">1</em></button><button id="btnPeek">透视 <em id="peekCount">1</em></button><button id="btnRestart">重开</button></div></footer></div><div class="debug-panel" id="debugPanel"><button class="small dbg-close" id="btnDebugClose">收起</button><h3>本关参数</h3><div class="row"><span>N / 层数 / 类型数</span><b id="dN">-</b></div><div class="row"><span>卡槽 / 初始可点 K</span><b id="dK">-</b></div><div class="row"><span>遮挡率 / 层极差</span><b id="dBlock">-</b></div><div class="row"><span>当前剩余 / 卡槽峰值</span><b id="dLeft">-</b></div><div class="row"><span>救援 / 透视 / 洗牌剩余</span><b id="dAssists">-</b></div><h3>当前盘可解性（规划机器人）</h3><div class="row"><span>可解率（60 次 rollout）</span><b id="dSolve">-</b></div><h3>工具</h3><button id="btnAuto">自动通关</button><button id="btnCheck">校验当前盘</button><button id="btnExport">导出埋点</button><button id="btnRules">规则说明</button><button id="btnDeadlock">制造死局</button><button id="btnRescueTest">救援回归</button><h3>本次会话</h3><div class="row"><span>事件数 / 首次咬合</span><b id="dEvents">-</b></div><div class="row"><span>卡槽峰值 / 死局次数</span><b id="dPeak">-</b></div><div class="row"><span>救援回归（5 样本）</span><b id="dRescue">-</b></div></div><div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div><div class="coach" id="coach"></div><script>(function (root, factory) {
 if (typeof module === 'object' && module.exports) module.exports = factory();
 else root.GameCore = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
@@ -23,26 +23,26 @@ var DIMS = { w: 360, h: 520 };
 var PILE = { x0: 0.08, y0: 0.06, x1: 0.92, y1: 0.94 };
 var OVERLAP_THR = 0.15;
 var LEVELS = [
-{ level: 1 , N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 1044 },
-{ level: 2 , N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 2044 },
-{ level: 3 , N: 30, L: 3, T: 3, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 3118 },
-{ level: 4 , N: 30, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 4044 },
-{ level: 5 , N: 36, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 5044 },
-{ level: 6 , N: 40, L: 3, T: 6, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 6229 },
-{ level: 7 , N: 44, L: 3, T: 8, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 7192 },
-{ level: 8 , N: 48, L: 3, T: 10, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 8229 },
-{ level: 9 , N: 48, L: 4, T: 10, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 9377 },
-{ level: 10, N: 60, L: 4, T: 12, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 10118 },
-{ level: 11, N: 60, L: 4, T: 12, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 11562 },
-{ level: 12, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 12895 },
-{ level: 13, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 13451 },
-{ level: 14, N: 66, L: 4, T: 16, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 14303 },
-{ level: 15, N: 66, L: 4, T: 16, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 15118 },
-{ level: 16, N: 72, L: 4, T: 18, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 16488 },
-{ level: 17, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 17340 },
-{ level: 18, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 18414 },
-{ level: 19, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 19192 },
-{ level: 20, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 20155 , estPass: 0.36 }
+{ level: 1, N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 1044, estPass: 1.00 },
+{ level: 2, N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 2044, estPass: 1.00 },
+{ level: 3, N: 30, L: 3, T: 3, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 3118, estPass: 0.99 },
+{ level: 4, N: 30, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 4044, estPass: 1.00 },
+{ level: 5, N: 36, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 5044, estPass: 1.00 },
+{ level: 6, N: 40, L: 3, T: 6, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 6229, estPass: 1.00 },
+{ level: 7, N: 44, L: 3, T: 8, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 7192, estPass: 0.99 },
+{ level: 8, N: 48, L: 3, T: 10, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 8229, estPass: 0.87 },
+{ level: 9, N: 48, L: 4, T: 10, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 9377, estPass: 0.96 },
+{ level: 10, N: 60, L: 4, T: 12, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 10044, estPass: 0.76 },
+{ level: 11, N: 60, L: 4, T: 12, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 11377, estPass: 0.75 },
+{ level: 12, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 12044, estPass: 0.71 },
+{ level: 13, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 13451, estPass: 0.71 },
+{ level: 14, N: 66, L: 4, T: 16, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 14303, estPass: 0.70 },
+{ level: 15, N: 66, L: 4, T: 16, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 15118, estPass: 0.67 },
+{ level: 16, N: 72, L: 4, T: 18, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 16488, estPass: 0.61 },
+{ level: 17, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 17340, estPass: 0.50 },
+{ level: 18, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 18414, estPass: 0.47 },
+{ level: 19, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 19192, estPass: 0.42 },
+{ level: 20, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 20155, estPass: 0.36 }
 ];
 function mulberry32(a) {
 return function () {
@@ -506,6 +506,62 @@ applyPick(level, st, pick);
 }
 return null;
 }
+function simulateWithRescue(cfg, trials, seed, strategy, maxRescues, penalty) {
+trials = trials || 60;
+var wins = 0, usedSum = 0;
+var rng = mulberry32((seed || 99) >>> 0);
+for (var t = 0; t < trials; t++) {
+var lv = generateLevel(cfg, (cfg.seed || 1) + t * 101);
+var st = initState(lv, null, null);
+var cap = cfg.C;
+var rescues = (maxRescues == null ? 1 : maxRescues);
+var used = 0, dead = false;
+while (true) {
+var left = 0;
+for (var i = 0; i < lv.pieces.length; i++) if (st.alive[i]) left++;
+if (left === 0) break;
+var cands = unblockedList(lv.pieces, st.alive, st.count);
+if (!cands.length) { dead = true; break; }
+var matchable = [];
+for (var c = 0; c < cands.length; c++) {
+if (findTrayMatch(lv, st, lv.pieces[cands[c]]) >= 0) matchable.push(cands[c]);
+}
+if (st.tray.length >= cap && !matchable.length) {
+if (rescues > 0) {
+rescues--; used++;
+var r = revive(lv, st.alive, st.tray);
+if (!r.ok) { dead = true; break; }
+st = initState(lv, r.alive, []);
+cap = Math.max(2, cfg.C - (penalty || 0));
+continue;
+}
+dead = true; break;
+}
+var pool = (st.tray.length >= cap) ? matchable : cands;
+var pick;
+if (strategy === 'random') {
+pick = pool[Math.floor(rng() * pool.length)];
+} else if (strategy === 'greedy') {
+if (matchable.length) {
+var bestM = matchable[0], bestU = -1;
+for (var mm = 0; mm < matchable.length; mm++) {
+var u = lv.blocks[matchable[mm]].length;
+if (u > bestU) { bestU = u; bestM = matchable[mm]; }
+}
+pick = bestM;
+} else {
+pick = pool[Math.floor(rng() * pool.length)];
+}
+} else {
+pick = choosePlanning(lv, st, pool);
+}
+applyPick(lv, st, pick);
+}
+if (!dead && left === 0) wins++;
+usedSum += used;
+}
+return { trials: trials, winRate: wins / trials, avgRescues: usedSum / trials };
+}
 function simulateFromState(level, alive, tray, trials, seed, strategy) {
 trials = trials || 60;
 var rng = mulberry32((seed || 7) >>> 0);
@@ -699,6 +755,7 @@ verifySequence: verifySequence,
 simulate: simulate,
 simulateStrategies: simulateStrategies,
 simulateFromState: simulateFromState,
+simulateWithRescue: simulateWithRescue,
 rebuildSolution: rebuildSolution,
 kCurve: kCurve,
 kStats: kStats,
@@ -780,6 +837,7 @@ clearTimeout(toast._t);
 toast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1100);
 }
 function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function capNow(){ return Math.max(2, S.cfg.C); }
 function blockedCount(id){
 var n = 0, bb = S.level.pieces[id].blockedBy;
 for (var i = 0; i < bb.length; i++) if (S.alive[bb[i]]) n++;
@@ -791,14 +849,14 @@ for (var i = 0; i < S.alive.length; i++) if (S.alive[i]) n++;
 return n;
 }
 function loadLevel(idx){
-var cfg = G.LEVELS[idx];
+var cfg = Object.assign({}, G.LEVELS[idx]);
 var level = G.generateLevel(cfg, 0);
 S = {
 idx: idx, cfg: cfg, level: level,
 alive: level.pieces.map(function(){ return true; }),
 tray: [], progress: 0, moves: 0, start: Date.now(),
 dead: false, won: false, auto: false,
-history: [], undosLeft: 2, shufflesLeft: 1,
+history: [], undosLeft: 2, shufflesLeft: 1, rescuesLeft: 1, capPenalty: 0, peekLeft: 1,
 trayPeak: 0, deadlocks: 0, combos: 0, lastMerge: 0, firstMatch: 0, recent: [],
 coach: cfg.level === 1 ? 0 : -1
 };
@@ -808,6 +866,8 @@ $('lvSelect').value = String(cfg.level);
 $('lvRule').textContent = '同形同色 · 一凸一凹 · 卡槽 ' + cfg.C;
 $('undoCount').textContent = S.undosLeft;
 $('shuffleCount').textContent = S.shufflesLeft;
+$('peekCount').textContent = S.peekLeft;
+document.body.classList.remove('peek');
 $('timer').textContent = '00:00';
 $('moves').textContent = '0 步';
 $('progText').textContent = '0/' + (cfg.N / 2);
@@ -821,7 +881,9 @@ updateStats();
 track('level_start', { N: cfg.N, L: cfg.L, T: cfg.T, C: cfg.C });
 clearInterval(timerHandle);
 timerHandle = setInterval(function(){
-if (S && !S.won && !S.dead) $('timer').textContent = fmtTime(Date.now() - S.start);
+if (!S) return;
+if (!S.won && !S.dead) $('timer').textContent = fmtTime(Date.now() - S.start);
+if (!S.won && !S.dead && S.tray.length >= capNow() && !S.auto) checkDeadlock();
 }, 500);
 setTimeout(fitBoard, 20);
 updateDebug();
@@ -888,9 +950,10 @@ updateStats();
 }
 function renderTray(){
 trayEl.innerHTML = '';
-trayEl.classList.toggle('warn', S.tray.length >= S.cfg.C - 2 && S.tray.length < S.cfg.C - 1);
-trayEl.classList.toggle('danger', S.tray.length >= S.cfg.C - 1);
-for (var i = 0; i < S.cfg.C; i++){
+var cap = capNow();
+trayEl.classList.toggle('warn', S.tray.length >= cap - 2 && S.tray.length < cap - 1);
+trayEl.classList.toggle('danger', S.tray.length >= cap - 1);
+for (var i = 0; i < cap; i++){
 var slot = document.createElement('div');
 slot.className = 'slot';
 var id = S.tray[i];
@@ -936,6 +999,8 @@ if (!S) return;
 $('moves').textContent = S.moves + ' 步';
 $('undoCount').textContent = S.undosLeft;
 $('shuffleCount').textContent = S.shufflesLeft;
+$('peekCount').textContent = S.peekLeft;
+document.body.classList.remove('peek');
 }
 function pieceAt(clientX, clientY){
 var el = document.elementFromPoint(clientX, clientY);
@@ -996,7 +1061,7 @@ if (!S.alive[id]) return false;
 if (blockedCount(id) > 0) return false;
 var p = S.level.pieces[id];
 var mi = trayMatchIndex(p);
-if (S.tray.length >= S.cfg.C && mi < 0){
+if (S.tray.length >= capNow() && mi < 0){
 shake(id);
 toast('卡槽满了，只能拿能配对的碎片');
 SFX.fail();
@@ -1074,7 +1139,7 @@ return out;
 }
 function checkDeadlock(){
 if (S.dead || S.won) return;
-if (S.tray.length < S.cfg.C) return;
+if (S.tray.length < capNow()) return;
 if (matchablePieces().length > 0) return;
 S.dead = true;
 S.deadlocks++;
@@ -1085,15 +1150,26 @@ return (m.matched ? '✓ ' : '· ') + m.label + (m.matched ? ' 咬合' : ' 入�
 }).join('<br>');
 showModal(
 '<h2>没有能配对的碎片了</h2>' +
-'<p>卡槽 ' + S.cfg.C + ' 格已满，盘面上也没有能配对的碎片。</p>' +
+'<p>卡槽 ' + capNow() + ' 格已满，盘面上也没有能配对的碎片。</p>' +
 (recap ? '<div class="recap">最近 5 步<br>' + recap + '</div>' : '') +
-'<p style="font-size:12px">提示：卡槽剩 2 格时，先拿能和卡槽配对的碎片，别拿"伙伴还压在下面"的。</p>' +
-'<div class="btns"><button class="primary" data-act="rescue">洗牌救援</button>' +
-'<button data-act="restart">重开本关</button></div>'
+'<p style="font-size:12px">' + (S.rescuesLeft > 0
+? '救援会放回卡槽碎片并重排，但本关卡槽上限会从 ' + capNow() + ' 降到 ' + Math.max(2, capNow() - 3) + ' 格。'
+: '本关救援已用完（正式版可看广告 +1）。') + '</p>' +
+'<div class="btns">' +
+(S.rescuesLeft > 0
+? '<button class="primary" data-act="rescue">洗牌救援（剩 ' + S.rescuesLeft + ' 次）</button>'
+: '') +
+'<button class="primary" data-act="restart">重开本关</button></div>'
 );
 }
 function win(){
-if (S.won || S.tray.length > 0) return;
+if (S.won) return;
+if (aliveCount() === 0 && S.tray.length > 0) {
+S.tray = [];
+renderTray();
+track('win_cleanup', {});
+}
+if (S.tray.length > 0 || aliveCount() > 0) return;
 S.won = true;
 clearInterval(timerHandle);
 var t = fmtTime(Date.now() - S.start);
@@ -1110,6 +1186,7 @@ showModal(
 }
 function rescue(){
 if (!S || !S.dead) return;
+if (S.rescuesLeft <= 0) { toast('本关救援次数用完了（正式版可看广告 +1）'); return; }
 var r = G.revive(S.level, S.alive, S.tray);
 if (!r.ok) {
 toast('救援失败：' + (r.reason || '请重开本关'));
@@ -1120,10 +1197,17 @@ S.dead = false;
 S.alive = r.alive;
 S.tray = [];
 S.history = [];
+S.rescuesLeft--;
+var newCap = Math.max(2, S.cfg.C - 3);
+S.cfg.C = newCap;
+S.level.cfg.C = newCap;
+var rr = G.reshuffle(S.level, S.alive, Date.now());
+if (rr.ok) S.level.solution = rr.solution;
 closeModal();
 renderBoard(); renderTray(); renderProgress(); updateStats();
-track('revive', { back: r.back.length });
-toast('已救回：' + r.back.length + ' 块放回盘面');
+track('revive', { back: r.back.length, rescuesLeft: S.rescuesLeft, cap: capNow() });
+toast('已救回：卡槽 -3 格（本关还剩 ' + S.rescuesLeft + ' 次救援）');
+checkDeadlock();
 }
 function undo(){
 if (!S || S.dead || S.won || S.auto) return;
@@ -1147,6 +1231,16 @@ S.history = [];
 renderBoard(); renderTray(); renderProgress(); updateStats();
 track('shuffle', { left: S.shufflesLeft, back: r.back.length });
 toast(r.back.length ? ('已洗牌（卡槽 ' + r.back.length + ' 块放回盘面）') : '已洗牌');
+}
+function peek(){
+if (!S || S.dead || S.won || S.auto) return;
+if (S.peekLeft <= 0) { toast('本关透视次数用完了'); return; }
+S.peekLeft--;
+$('peekCount').textContent = S.peekLeft;
+document.body.classList.add('peek');
+toast('透视 3 秒：被压住的碎片可见形状/颜色');
+track('peek', { left: S.peekLeft });
+setTimeout(function(){ document.body.classList.remove('peek'); }, 3000);
 }
 function hint(){
 if (!S || S.dead || S.won || S.auto) return;
@@ -1173,6 +1267,30 @@ track('hint', { kind: 'pair' });
 return;
 }
 }
+}
+var cap = capNow();
+var dangerous = unblocked.every(function (id) {
+var tr = S.tray.slice();
+var pc = S.level.pieces[id];
+var mi = -1;
+for (var j = 0; j < tr.length; j++) {
+if (G.canMatch(pc, S.level.pieces[tr[j]], S.cfg.orient)) { mi = j; break; }
+}
+if (mi >= 0) tr.splice(mi, 1); else tr.push(id);
+if (tr.length < cap) return false;
+for (var k = 0; k < unblocked.length; k++) {
+if (unblocked[k] === id) continue;
+var q = S.level.pieces[unblocked[k]];
+for (var t = 0; t < tr.length; t++) {
+if (G.canMatch(q, S.level.pieces[tr[t]], S.cfg.orient)) return false;
+}
+}
+return true;
+});
+if (dangerous) {
+toast('注意：现在拿任何一块，2 步内都会锁死卡槽，建议先洗牌/撤回');
+track('hint', { kind: 'danger' });
+return;
 }
 highlight([unblocked[0]]);
 toast('提示：先拿这块，能解锁更多');
@@ -1262,6 +1380,7 @@ $('dBlock').textContent = (S.level.meta.blockedRate * 100).toFixed(0) + '% / ' +
 $('dLeft').textContent = aliveCount() + ' / ' + S.trayPeak;
 $('dEvents').textContent = EVENTS.length + ' / ' + (first ? (first.t / 1000).toFixed(1) + 's' : '-');
 $('dPeak').textContent = S.trayPeak + ' / ' + S.deadlocks;
+$('dAssists').textContent = S.rescuesLeft + ' / ' + S.peekLeft + ' / ' + S.shufflesLeft;
 var rr = EVENTS.filter(function(e){ return e.name === 'rescue_regression'; }).slice(-1)[0];
 if (rr) $('dRescue').textContent = rr.ok + '/' + rr.tested;
 }
@@ -1323,7 +1442,7 @@ showModal(
 '<h2>规则说明</h2>' +
 '<p style="text-align:left;line-height:1.7">' +
 '1. 盘面是多层堆叠的拼图碎片；只有<b>完全没被压住</b>的顶层碎片可以点。<br>' +
-'2. 点一块 → 进入底部卡槽（本关 ' + (S ? S.cfg.C : 5) + ' 格）。<br>' +
+'2. 点一块 → 进入底部卡槽（本关 ' + (S ? capNow() : 5) + ' 格）。<br>' +
 '3. 卡槽里两块<b>同形同色、且一凸一凹</b> → 自动咬合，进度板点亮一格。<br>' +
 '4. 卡槽满了以后，只能拿能配对的碎片；拿错不会判负，只会提示。<br>' +
 '5. 卡槽满且盘面没有可配对碎片 = 死局，可洗牌救援。<br>' +
@@ -1332,6 +1451,7 @@ showModal(
 );
 }
 $('btnHint').onclick = hint;
+$('btnPeek').onclick = peek;
 $('btnUndo').onclick = undo;
 $('btnShuffle').onclick = shuffle;
 $('btnRestart').onclick = function(){ loadLevel(S.idx); };
@@ -1375,7 +1495,6 @@ rescueRegression: rescueRegression,
 rescue: rescue,
 autoSolve: autoSolve
 };
-window.__proto = window.__gameDebug;
 var qs = location.search;
 var lm = qs.match(/level=(\d+)/);
 loadLevel(lm ? Math.min(G.LEVELS.length - 1, Math.max(0, +lm[1] - 1)) : 0);
