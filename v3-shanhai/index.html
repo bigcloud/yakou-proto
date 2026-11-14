@@ -30,18 +30,23 @@
     background:radial-gradient(ellipse at 50% 40%,rgba(87,214,163,.06),rgba(0,0,0,.1) 70%)}
   #board .hint{position:absolute;left:12px;top:8px;right:12px;font-size:9px;color:var(--dim);
     line-height:1.4;pointer-events:none;z-index:5}
-  .piece{position:absolute;display:flex;align-items:center;justify-content:center;cursor:pointer;
-    filter:drop-shadow(0 4px 9px rgba(0,0,0,.6));transition:transform .12s,opacity .15s}
-  .piece svg{pointer-events:none}
-  .piece.blocked{opacity:.34;filter:grayscale(.9) brightness(.65);pointer-events:none}
-  .piece .lock{display:none;position:absolute;right:0;bottom:0;font-size:8px;color:#c9d2e3;
-    background:rgba(0,0,0,.55);border-radius:5px;padding:0 3px}
+  .piece{position:absolute;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:transform .12s,opacity .15s,filter .15s;
+    box-shadow:0 4px 10px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.08);}
+  .piece .bump{position:absolute;top:-11%;left:50%;transform:translateX(-50%);
+    width:44%;height:22%;border-radius:6px;background:rgba(255,255,255,.85);
+    border:1.5px solid rgba(0,0,0,.32);}
+  .piece.blank .bump{top:5%;height:23%;border-radius:5px;background:rgba(0,0,0,.42);
+    border:none;box-shadow:inset 0 3px 4px rgba(0,0,0,.7);}
+  .piece .glyph{font-size:.56em;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);
+    pointer-events:none;font-family:"STKaiti","Kaiti SC",serif;}
+  .piece .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:8px;color:#c9d2e3;
+    background:rgba(0,0,0,.5);border-radius:5px;padding:0 3px}
+  .piece.blocked{filter:grayscale(.9) brightness(.55);cursor:default;pointer-events:none}
+  .piece.blocked .glyph{opacity:.35}
   .piece.blocked .lock{display:block}
-  .pol{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);font-size:8px;font-weight:700;
-    border-radius:6px;padding:0 4px;line-height:1.45;letter-spacing:1px}
-  .pol.yang{background:#f6d789;color:#2a1d05}
-  .pol.yin{background:#1b2836;color:#9fb6cc;border:1px solid #35506a}
-  .bname{position:absolute;left:50%;top:-1px;transform:translateX(-50%);font-size:8px;color:rgba(230,240,235,.6);letter-spacing:1px}
+  .polTag{position:absolute;left:3px;top:2px;font-size:8px;color:rgba(255,255,255,.9);
+    text-shadow:0 1px 2px rgba(0,0,0,.6);letter-spacing:1px}
   #trayWrap{background:rgba(12,20,20,.9);border:1px solid var(--line);border-radius:14px;padding:7px 9px 8px}
   .row{display:flex;align-items:center;gap:6px}
   .row .lbl{width:24px;font-size:10px;color:var(--dim);text-align:center}
@@ -190,7 +195,8 @@ function generate(idx){
   const pad = 14;
   const cellX = Math.floor((bw - pad*2) / cols);
   const cellY = Math.floor((bh - pad*2 - 26) / rows);
-  const size = Math.max(36, Math.round(Math.min(cellX, cellY) * 0.78));
+  const target = total <= 16 ? 54 : total <= 32 ? 46 : 42;
+  const size = Math.max(34, Math.min(target, Math.round(Math.min(cellX, cellY) * 0.95)));
   const pieces = [];
   let id = 0;
   beasts.forEach(beast=>{
@@ -246,37 +252,33 @@ function renderBeastBar(){
     bar.appendChild(c);
   });
 }
-// 灵玉令牌：阴=墨玉、阳=灵玉，中间是神兽单字
-function tokenHtml(beast, pol, size, tag){
-  const isYin = pol==='yin';
-  const bg = isYin
-    ? `radial-gradient(circle at 34% 28%, #172824, #07110d 72%)`
-    : `radial-gradient(circle at 34% 28%, ${beast.color}, ${beast.color}99 62%, ${beast.color}55 100%)`;
-  const ring = isYin ? `${beast.color}99` : `rgba(6,20,14,.85)`;
-  const glyphColor = isYin ? beast.color : 'rgba(4,18,12,.82)';
-  return `<div style="position:relative;width:${size}px;height:${size}px;">
-    <div style="position:absolute;inset:0;border-radius:50%;background:${bg};
-      box-shadow:inset 0 0 0 2px ${ring}, 0 3px 10px rgba(0,0,0,.45);"></div>
-    <div style="position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-size:${Math.round(size*0.46)}px;font-weight:700;color:${glyphColor};
-      font-family:"STKaiti","Kaiti SC",serif;text-shadow:0 1px 2px rgba(0,0,0,.35);">${beast.glyph}</div>
-    ${tag ? `<span class="pol ${pol}" style="bottom:-3px">${isYin?'阴':'阳'}</span>` : ''}
-  </div>`;
+// 2.4 卡片语言：神兽色 + 单字 + 阴阳=凸/凹
+function partCard(beast, pol, size, withLock){
+  const c = beast.color;
+  const bg = `linear-gradient(160deg, ${c}dd, ${c}88)`;
+  const border = pol==='yang' ? '#ffffffaa' : 'rgba(0,0,0,.45)';
+  return { bg, border };
 }
 function renderBoard(){
   const board=$('board');
   [...board.querySelectorAll('.piece')].forEach(e=>e.remove());
   boardPieces().slice().sort((a,b)=>a.layer-b.layer).forEach(p=>{
     const beast = beastOf(p.beast);
-    // 渲染前按当前盘面尺寸再夹一次，避免底部越界
-    const maxX = board.clientWidth - p.size - 8, maxY = board.clientHeight - p.size - 10;
-    p.x = Math.max(6, Math.min(maxX, p.x));
-    p.y = Math.max(6, Math.min(maxY, p.y));
+    const c = beast.color;
+    // 渲染前按盘面尺寸夹一次
+    const maxX = board.clientWidth - p.size - 6, maxY = board.clientHeight - p.size - 8;
+    p.x = Math.max(4, Math.min(maxX, p.x));
+    p.y = Math.max(4, Math.min(maxY, p.y));
     const el=document.createElement('div');
     el.dataset.id=p.id;
-    el.className='piece' + (blockedCount(p)>0?' blocked':'');
-    el.style.cssText=`left:${p.x}px;top:${p.y}px;width:${p.size}px;height:${p.size}px;z-index:${p.layer*1000+p.id}`;
-    el.innerHTML = tokenHtml(beast, p.pol, Math.round(p.size*0.86), true) +
+    el.className='piece ' + (p.pol==='yin'?'blank':'tab') + (blockedCount(p)>0?' blocked':'');
+    el.style.cssText=`left:${p.x}px;top:${p.y}px;width:${p.size}px;height:${p.size}px;z-index:${p.layer*1000+p.id};
+      background:linear-gradient(160deg,${c}dd,${c}88);
+      border:2px solid ${p.pol==='yang'?'rgba(255,255,255,.75)':'rgba(0,0,0,.45)'};`;
+    el.style.fontSize = p.size + 'px';
+    el.innerHTML = '<span class="bump"></span>' +
+      `<span class="glyph">${beast.glyph}</span>` +
+      `<span class="polTag">${p.pol==='yin'?'阴':'阳'}</span>` +
       `<span class="lock">${blockedCount(p)}</span>`;
     if (blockedCount(p)===0) el.onclick=()=>pick(p.id);
     board.appendChild(el);
@@ -284,8 +286,18 @@ function renderBoard(){
 }
 function itemEl(p){
   const beast=beastOf(p.beast);
+  const c=beast.color;
   const d=document.createElement('div'); d.className='item';
-  d.innerHTML = tokenHtml(beast, p.pol, 48, true);
+  d.style.cssText=`position:relative;width:44px;height:44px;border-radius:10px;display:flex;
+    align-items:center;justify-content:center;font-size:44px;
+    background:linear-gradient(160deg,${c}dd,${c}88);
+    border:2px solid ${p.pol==='yang'?'rgba(255,255,255,.75)':'rgba(0,0,0,.45)'};
+    box-shadow:0 3px 8px rgba(0,0,0,.4);`;
+  const bump = p.pol==='yin'
+    ? '<span style="position:absolute;left:50%;top:6%;transform:translateX(-50%);width:46%;height:24%;border-radius:5px;background:rgba(0,0,0,.42);box-shadow:inset 0 3px 4px rgba(0,0,0,.7)"></span>'
+    : '<span style="position:absolute;left:50%;top:-11%;transform:translateX(-50%);width:44%;height:22%;border-radius:6px;background:rgba(255,255,255,.85);border:1.5px solid rgba(0,0,0,.32)"></span>';
+  d.innerHTML = bump + `<span style="font-size:.56em;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);font-family:\"STKaiti\",serif">${beast.glyph}</span>` +
+    `<span class="polTag">${p.pol==='yin'?'阴':'阳'}</span>`;
   return d;
 }
 function renderTray(){
@@ -496,6 +508,16 @@ function startLevel(idx){
   // 等布局稳定后再生成，避免底部碎片越界
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     S=generate(idx); renderAll(); $('lvNum').textContent=idx+1;
+    // 布局稳定后再夹一次，避免底部越界
+    requestAnimationFrame(()=>{
+      const b=$('board');
+      S.pieces.forEach(p=>{
+        if(p.location!=='board') return;
+        p.x=Math.max(4,Math.min(b.clientWidth-p.size-6,p.x));
+        p.y=Math.max(4,Math.min(b.clientHeight-p.size-8,p.y));
+      });
+      renderBoard();
+    });
   }));
 }
 $('btnHint').onclick=hint;
