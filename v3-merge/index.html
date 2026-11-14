@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>咬合合成 · v3.0 可玩原型</title>
+<style>
+  :root{
+    --bg:#0f131a;--panel:#171d28;--panel2:#1d2533;--line:#2a3446;--text:#e7ecf5;--dim:#8d99ad;
+    --accent:#ffb454;--good:#6ee7b7;--bad:#fb7185;--gold:#e0b45c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"PingFang SC","Noto Sans SC",system-ui,sans-serif;overflow:hidden;user-select:none}
+  #app{height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;padding:7px 10px 9px;gap:6px}
+  header{display:flex;align-items:center;gap:8px;height:32px;padding:0 2px;font-size:13px}
+  header b{color:var(--accent);font-size:15px}
+  .spacer{flex:1}
+  .hud{display:flex;gap:10px;font-size:11px;color:var(--dim)}
+  .hud em{font-style:normal;color:var(--text)}
+  #board{position:relative;flex:1;min-height:220px;border-radius:14px;background:#131a24;
+    border:1px solid var(--line);overflow:hidden}
+  #board .hint{position:absolute;left:10px;top:8px;right:10px;font-size:9px;color:var(--dim);z-index:999;pointer-events:none;line-height:1.35}
+  .p{position:absolute;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.08);
+    transition:transform .12s,filter .15s;cursor:pointer}
+  .p svg{pointer-events:none}
+  .p .bump{position:absolute;left:50%;top:-9%;transform:translateX(-50%);
+    width:40%;height:18%;border-radius:6px;background:rgba(255,255,255,.8);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .p.blank .bump{top:4%;height:20%;background:rgba(0,0,0,.45);box-shadow:inset 0 2px 4px rgba(0,0,0,.7)}
+  .p.blocked{filter:grayscale(.85) brightness(.55);cursor:default;pointer-events:none}
+  .p.blocked svg{opacity:.25}
+  .p .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:8px;color:#c9d2e3;
+    background:rgba(0,0,0,.5);border-radius:5px;padding:0 3px}
+  .p.blocked .lock{display:block}
+  #trayWrap{background:#121824;border:1px solid var(--line);border-radius:14px;padding:7px 9px 8px;
+    display:flex;flex-direction:column;gap:5px}
+  .trayRow{display:flex;align-items:center;gap:6px}
+  .trayRow .label{width:26px;font-size:10px;color:var(--dim);writing-mode:vertical-rl;letter-spacing:2px}
+  .slots{flex:1;display:flex;gap:5px;min-width:0}
+  .slot{flex:1;min-width:0;height:54px;border-radius:10px;border:1px dashed #33405a;position:relative;
+    display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .slot.filled{border-style:solid;border-color:#3d4b64;background:#101620}
+  .slot .item{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);animation:pop .18s ease-out}
+  @keyframes pop{0%{transform:scale(.6);opacity:.2}100%{transform:scale(1);opacity:1}}
+  .slot .lvl{position:absolute;right:-3px;bottom:-3px;font-size:9px;font-weight:700;color:#1a1206;
+    background:var(--accent);border-radius:7px;padding:0 4px;line-height:1.4}
+  .slot .mergeable{position:absolute;inset:-3px;border:2px solid var(--good);border-radius:10px;
+    box-shadow:0 0 12px rgba(110,231,183,.5);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.45}}
+  .actions{display:flex;gap:7px}
+  .actions button{flex:1;height:38px;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel);color:var(--text);font-size:12px;display:flex;align-items:center;justify-content:center;gap:4px}
+  .actions button:active{background:var(--panel2)}
+  #modalBg{position:fixed;inset:0;background:rgba(6,9,14,.74);display:none;align-items:center;
+    justify-content:center;padding:24px;z-index:20;backdrop-filter:blur(2px)}
+  #modalBg.show{display:flex}
+  #modal{width:100%;max-width:340px;background:linear-gradient(180deg,#1b2331,#151b26);
+    border:1px solid #33405a;border-radius:16px;padding:18px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+  #modal h2{margin:0 0 8px;font-size:20px}
+  #modal p{color:var(--dim);font-size:13px;line-height:1.6;margin:6px 0}
+  #modal .btns{display:flex;gap:8px;margin-top:14px}
+  #modal .btns button{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel);color:var(--text);font-size:14px}
+  #modal .btns button.primary{background:linear-gradient(180deg,#ffc46b,#f59e0b);border-color:#f59e0b;color:#241a06;font-weight:700}
+  #toast{position:fixed;left:50%;bottom:232px;transform:translateX(-50%);background:rgba(23,29,40,.96);
+    border:1px solid #33405a;color:var(--text);font-size:12px;padding:8px 14px;border-radius:20px;
+    opacity:0;transition:opacity .18s;pointer-events:none;max-width:86vw;text-align:center;z-index:30}
+  #toast.show{opacity:1}
+  .totems{display:flex;gap:4px;align-items:center}
+  .totem{width:12px;height:12px;border-radius:3px;background:#1e2635;border:1px solid #33405a}
+  .totem.done{background:linear-gradient(180deg,#ffd98a,#e0a93c);border-color:#e0a93c}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div>第 <b id="lvNum">1</b> 关</div>
+    <div class="spacer"></div>
+    <div class="hud">
+      <span>图腾 <em id="totemText">0/3</em></span>
+      <span id="timer">00:00</span>
+    </div>
+  </header>
+  <div id="board"><div class="hint">点亮碎片→卡槽 · 两块咬合自动合成 · 8 块 = 1 个图腾</div></div>
+  <div id="trayWrap">
+    <div class="trayRow">
+      <div class="label">卡槽</div>
+      <div class="slots" id="traySlots"></div>
+    </div>
+    <div class="trayRow">
+      <div class="label">暂存</div>
+      <div class="slots" id="stashSlots" style="max-width:118px"></div>
+      <div style="flex:1"></div>
+      <div class="totems" id="totems"></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="btnHint">提示</button>
+    <button id="btnShuffle">换堆 <em id="shuffleCount">1</em></button>
+    <button id="btnRestart">重开</button>
+  </div>
+</div>
+<div id="modalBg"><div id="modal"></div></div>
+<div id="toast"></div>
+<script>
+/* ================= 基础 ================= */
+const SHAPES = {
+  circle: '<circle cx="12" cy="12" r="7" fill="COLOR"/>',
+  square: '<rect x="5.5" y="5.5" width="13" height="13" rx="2.5" fill="COLOR"/>',
+  triangle: '<path d="M12 5 L19.5 18.5 H4.5 Z" fill="COLOR"/>',
+  wave: '<path d="M4 10 Q8 5.5 12 10 T20 10 M4 16 Q8 11.5 12 16 T20 16" stroke="COLOR" stroke-width="3" fill="none" stroke-linecap="round"/>'
+};
+const COLORS = { red:'#ef5b5b', blue:'#4f8ff7', green:'#3fc98a', yellow:'#f5c542', purple:'#a06cf7' };
+const TYPES = [
+  {shape:'circle', color:'red'}, {shape:'square', color:'blue'}, {shape:'triangle', color:'green'},
+  {shape:'wave', color:'yellow'}, {shape:'circle', color:'purple'}, {shape:'square', color:'red'},
+  {shape:'triangle', color:'blue'}, {shape:'wave', color:'green'}
+];
+const LEVELS = [
+  { types: 3, tray: 5, stash: 2, layers: 2, size: 52, seed: 21 },
+  { types: 5, tray: 5, stash: 2, layers: 3, size: 50, seed: 42 },
+  { types: 6, tray: 5, stash: 2, layers: 3, size: 48, seed: 63 },
+];
+const $ = id => document.getElementById(id);
+let S = null;
+
+function icon(type, size){
+  const t = TYPES[type];
+  const c = COLORS[t.color];
+  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${SHAPES[t.shape].replace('COLOR', c)}</svg>`;
+  return svg;
+}
+function rngFactory(a){ return function(){ a|=0; a=(a+0x6D2B79F5)|0;
+  let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t;
+  return ((t^(t>>>14))>>>0)/4294967296; }; }
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1400); }
+function modal(html){ $('modal').innerHTML=html; $('modalBg').classList.add('show'); }
+function closeModal(){ $('modalBg').classList.remove('show'); }
+
+/* ================= 生成 ================= */
+/* 每种类型 8 块（4 凸 4 凹）→ 8 块恰好合成一个图腾 */
+function generate(idx){
+  const cfg = LEVELS[idx];
+  const rng = rngFactory(cfg.seed);
+  const total = cfg.types * 8;
+  const AW = 340, AH = 280, sz = cfg.size;
+  const pieces = [];
+  let id = 0;
+  for (let t = 0; t < cfg.types; t++){
+    for (let k = 0; k < 8; k++){
+      pieces.push({
+        id: id++, type: t, level: 1,
+        orientation: k < 4 ? 'tab' : 'blank',
+        location: 'board',
+        x: Math.round(rng()*(AW-sz)), y: Math.round(rng()*(AH-sz)),
+        layer: Math.floor(rng()*cfg.layers), size: sz,
+        blockedBy: []
+      });
+    }
+  }
+  // 遮挡关系
+  for (const a of pieces){
+    for (const b of pieces){
+      if (b === a || b.layer <= a.layer) continue;
+      const ox = Math.max(0, Math.min(a.x+a.size,b.x+b.size)-Math.max(a.x,b.x));
+      const oy = Math.max(0, Math.min(a.y+a.size,b.y+b.size)-Math.max(a.y,b.y));
+      if (ox*oy >= 0.15*a.size*a.size) a.blockedBy.push(b.id);
+    }
+  }
+  return { level: idx, cfg, pieces, tray: [], stash: [],
+    trayCap: cfg.tray, stashCap: cfg.stash, totemsDone: 0, totemsTotal: cfg.types,
+    done: false, start: Date.now(), shuffleLeft: 1, sel: null };
+}
+function blockedCount(p){
+  return p.blockedBy.filter(b => S.pieces[b].location === 'board').length;
+}
+function boardPieces(){ return S.pieces.filter(p => p.location === 'board'); }
+
+/* ================= 渲染 ================= */
+function renderBoard(){
+  const board = $('board');
+  [...board.querySelectorAll('.p')].forEach(e => e.remove());
+  boardPieces().slice().sort((a,b)=>a.layer-b.layer).forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'p' + (p.orientation === 'blank' ? ' blank' : '') +
+      (blockedCount(p) > 0 ? ' blocked' : '');
+    el.style.cssText = `left:${p.x}px;top:${p.y}px;width:${p.size}px;height:${p.size}px;z-index:${p.layer*1000+p.id};
+      background:linear-gradient(160deg,${COLORS[TYPES[p.type].color]}33, #18202c 70%);
+      border:2px solid ${COLORS[TYPES[p.type].color]}`;
+    el.dataset.id = p.id;
+    el.innerHTML = '<span class="bump"></span>' + icon(p.type, Math.round(p.size*0.5)) +
+      '<span class="lock">' + blockedCount(p) + '</span>';
+    if (blockedCount(p) === 0) el.onclick = () => pick(p.id);
+    board.appendChild(el);
+  });
+  $('board').querySelector('.hint').style.display = boardPieces().length ? 'block' : 'none';
+}
+function renderTray(){
+  const wrap = $('traySlots'); wrap.innerHTML = '';
+  for (let i=0;i<S.trayCap;i++){
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const it = S.tray[i];
+    if (it){
+      slot.classList.add('filled');
+      slot.appendChild(itemEl(it));
+      slot.onclick = () => moveToStash(it.id);
+    }
+    wrap.appendChild(slot);
+  }
+  const st = $('stashSlots'); st.innerHTML = '';
+  for (let i=0;i<S.stashCap;i++){
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const it = S.stash[i];
+    if (it){
+      slot.classList.add('filled');
+      slot.appendChild(itemEl(it));
+      slot.onclick = () => takeFromStash(it.id);
+    }
+    st.appendChild(slot);
+  }
+  // 图腾进度
+  const tw = $('totems'); tw.innerHTML = '';
+  for (let i=0;i<S.totemsTotal;i++){
+    const d = document.createElement('div');
+    d.className = 'totem' + (i < S.totemsDone ? ' done' : '');
+    tw.appendChild(d);
+  }
+  $('totemText').textContent = S.totemsDone + '/' + S.totemsTotal;
+  $('shuffleCount').textContent = S.shuffleLeft;
+  $('lvNum').textContent = S.level + 1;
+}
+function itemEl(it){
+  const d = document.createElement('div');
+  d.className = 'item';
+  const c = COLORS[TYPES[it.type].color];
+  d.style.background = `linear-gradient(160deg,${c}44,#141b26 72%)`;
+  d.style.border = '1px solid ' + c;
+  d.innerHTML = icon(it.type, it.level >= 3 ? 34 : 30);
+  if (it.level > 1){
+    const b = document.createElement('span');
+    b.className = 'lvl';
+    b.textContent = '×' + Math.pow(2, it.level - 1);
+    d.appendChild(b);
+  } else {
+    // 凸/凹小标记
+    const m = document.createElement('i');
+    m.style.cssText = `position:absolute;top:2px;left:2px;width:8px;height:8px;border-radius:50%;
+      background:${it.orientation === 'tab' ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.6)'};`;
+    d.appendChild(m);
+  }
+  return d;
+}
+
+/* ================= 交互 ================= */
+function pick(id){
+  if (!S || S.done) return;
+  const p = S.pieces[id];
+  if (!p || p.location !== 'board') return;
+  if (blockedCount(p) > 0) return;
+  if (S.tray.length >= S.trayCap){
+    toast('卡槽满了：点卡槽里的碎片放进暂存');
+    return;
+  }
+  p.location = 'tray';
+  p.blockedBy = [];
+  S.tray.push(p);
+  renderBoard(); renderTray();
+  resolveMerges();
+}
+function moveToStash(id){
+  if (S.done) return;
+  const it = S.tray.find(x => x.id === id);
+  if (!it) return;
+  if (S.stash.length >= S.stashCap){ toast('暂存也满了'); return; }
+  S.tray = S.tray.filter(x => x.id !== id);
+  it.location = 'stash';
+  S.stash.push(it);
+  renderTray();
+  checkFail();
+}
+function takeFromStash(id){
+  if (S.done) return;
+  const it = S.stash.find(x => x.id === id);
+  if (!it) return;
+  if (S.tray.length >= S.trayCap){ toast('卡槽满了，先合一次或腾一格'); return; }
+  S.stash = S.stash.filter(x => x.id !== id);
+  it.location = 'tray';
+  S.tray.push(it);
+  renderTray();
+  resolveMerges();
+}
+
+/* ================= 合成 ================= */
+function canMerge(a,b){
+  if (!a || !b || a.id === b.id) return false;
+  if (a.type !== b.type || a.level !== b.level) return false;
+  if (a.level === 1) return a.orientation !== b.orientation;
+  return true;
+}
+function resolveMerges(){
+  let merged = false;
+  for (let i=0;i<S.tray.length;i++){
+    for (let j=i+1;j<S.tray.length;j++){
+      const a = S.tray[i], b = S.tray[j];
+      if (!canMerge(a,b)) continue;
+      // 合并：b 并入 a
+      S.tray = S.tray.filter(x => x.id !== b.id);
+      a.level += 1;
+      b.location = 'gone';
+      if (a.level > 3){
+        // 8 块 = 图腾
+        S.tray = S.tray.filter(x => x.id !== a.id);
+        a.location = 'gone';
+        S.totemsDone++;
+        toast('图腾完成！');
+      } else if (a.level >= 3) {
+        toast('咬合合成 ×' + Math.pow(2, a.level - 1));
+      }
+      merged = true;
+      renderTray(); renderBoard();
+      if (S.totemsDone >= S.totemsTotal) { win(); return; }
+      // 继续链式合成（同步，避免与自动测试/连点交错）
+      resolveMerges();
+      return;
+    }
+  }
+  if (!merged) checkFail();
+}
+function checkFail(){
+  if (S.done) return;
+  if (S.totemsDone >= S.totemsTotal) { win(); return; }
+  if (S.tray.length < S.trayCap) return;
+  // 卡槽满：如暂存有空间，自动放一块过去（满槽安全网）
+  if (S.stash.length < S.stashCap){
+    const it = S.tray.shift();
+    it.location = 'stash';
+    S.stash.push(it);
+    renderTray();
+    toast('卡槽满了，自动放进暂存');
+    return;
+  }
+  // 都满了，且没有可合 → 失败
+  fail();
+}
+function fail(){
+  S.done = true;
+  modal('<h2>卡住了</h2><p>卡槽和暂存都满了，也没有能咬合的碎片。</p>' +
+    '<div class="btns"><button class="primary" id="mRestart">重开</button></div>');
+  $('mRestart').onclick = () => { closeModal(); startLevel(S.level); };
+}
+function win(){
+  if (S.done) return;
+  S.done = true;
+  const sec = Math.round((Date.now() - S.start)/1000);
+  modal('<h2>图腾集齐了！</h2>' +
+    '<p>用时 ' + Math.floor(sec/60) + ' 分 ' + (sec%60) + ' 秒 · ' +
+    S.totemsTotal + ' 个图腾 · 合成了 ' + (S.totemsTotal * 3) + ' 次</p>' +
+    '<div class="btns"><button class="primary" id="mNext">下一关</button><button id="mAgain">重玩</button></div>');
+  $('mNext').onclick = () => { closeModal(); startLevel(Math.min(LEVELS.length-1, S.level+1)); };
+  $('mAgain').onclick = () => { closeModal(); startLevel(S.level); };
+}
+function hint(){
+  if (S.done) return;
+  // 优先提示：卡槽里能与板上碎片合成的
+  const trayL1 = S.tray.filter(x => x.level === 1);
+  for (const p of boardPieces()){
+    if (blockedCount(p) > 0) continue;
+    for (const t of trayL1){
+      if (canMerge(t, p)) { flashPiece(p.id); toast('这块能和卡槽里的咬合'); return; }
+    }
+  }
+  const any = boardPieces().find(p => blockedCount(p) === 0);
+  if (any) { flashPiece(any.id); toast('先取这块'); }
+}
+function flashPiece(id){
+  const el = [...$('board').querySelectorAll('.p')].find(e => +e.dataset.id === id);
+  if (!el) return;
+  el.style.boxShadow = '0 0 0 3px rgba(110,231,183,.7)';
+  setTimeout(()=>{ el.style.boxShadow = ''; }, 1200);
+}
+function shuffle(){
+  if (S.done) return;
+  if (S.shuffleLeft <= 0){ toast('本关换堆用完了'); return; }
+  S.shuffleLeft--;
+  const rng = rngFactory(Date.now()%100000);
+  const cfg = S.cfg, AW = 340, AH = 280, sz = cfg.size;
+  for (const p of S.pieces.filter(x => x.location === 'board')){
+    p.x = Math.round(rng()*(AW-sz));
+    p.y = Math.round(rng()*(AH-sz));
+    p.layer = Math.floor(rng()*cfg.layers);
+    p.blockedBy = [];
+  }
+  for (const a of S.pieces.filter(x=>x.location==='board')){
+    for (const b of S.pieces.filter(x=>x.location==='board')){
+      if (b === a || b.layer <= a.layer) continue;
+      const ox = Math.max(0, Math.min(a.x+a.size,b.x+b.size)-Math.max(a.x,b.x));
+      const oy = Math.max(0, Math.min(a.y+a.size,b.y+b.size)-Math.max(a.y,b.y));
+      if (ox*oy >= 0.15*a.size*a.size) a.blockedBy.push(b.id);
+    }
+  }
+  renderBoard(); renderTray();
+  toast('已换堆');
+}
+function updateHud(){
+  $('timer').textContent = '00:00';
+}
+function startLevel(idx){
+  S = generate(idx);
+  closeModal();
+  renderBoard(); renderTray();
+  // 给盘面碎片标 id 方便点击
+  [...$('board').querySelectorAll('.p')].forEach((el,i)=>{});
+  bindBoard();
+  updateHud();
+}
+function bindBoard(){
+  // renderBoard 内部已绑定 onclick；这里只做兜底
+}
+$('btnHint').onclick = hint;
+$('btnShuffle').onclick = shuffle;
+$('btnRestart').onclick = () => startLevel(S.level);
+setInterval(()=>{ if(!S||S.done) return;
+  const sec=Math.round((Date.now()-S.start)/1000);
+  $('timer').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+},500);
+
+/* ================= 调试 ================= */
+window.__merge = {
+  state:()=>S,
+  pick, moveToStash, takeFromStash, resolveMerges, startLevel,
+  autoPlay(){
+    let guard=0;
+    while(!S.done && guard++<800){
+      const avail = boardPieces().filter(p=>blockedCount(p)===0);
+      if(!avail.length) break;
+      // 1) 卡槽里已有可合对的，should be auto; 2) 取一块能与卡槽合成的
+      let target = avail.find(p => S.tray.some(t => canMerge(t, p)));
+      if(!target){
+        // 3) 暂存里能与卡槽合成的，取回
+        const st = S.stash.find(x => S.tray.some(t => canMerge(t, x)));
+        if(st && S.tray.length < S.trayCap){ takeFromStash(st.id); continue; }
+        // 4) 卡槽满：先腾到暂存
+        if(S.tray.length >= S.trayCap){
+          if(S.stash.length < S.stashCap){
+            // 优先腾出"没有潜在搭档"的那块
+            const noPair = S.tray.find(x => !avail.some(p => canMerge(x,p)) &&
+              !S.stash.some(y => canMerge(x,y)));
+            moveToStash((noPair || S.tray[0]).id);
+            continue;
+          }
+        }
+        // 5) 选一块"卡槽里最少见的类型/朝向"
+        const score = p => {
+          const same = S.tray.filter(t => t.type === p.type && t.level === 1 && t.orientation === p.orientation).length;
+          const opp  = S.tray.filter(t => t.type === p.type && t.level === 1 && t.orientation !== p.orientation).length;
+          return same * 10 - opp * 5;
+        };
+        target = avail.slice().sort((a,b)=>score(a)-score(b))[0];
+      }
+      pick(target.id);
+      // 自动合成是异步的，等它完成
+      if(!S.done) { /* no-op */ }
+    }
+    return true;
+  }
+};
+startLevel(0);
+</script>
+</body>
+</html>
