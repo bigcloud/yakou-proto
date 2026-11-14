@@ -1,0 +1,1385 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23161b24'/%3E%3Ccircle cx='24' cy='32' r='9' fill='%23e8534a'/%3E%3Crect x='34' y='23' width='18' height='18' rx='4' fill='%234f8cf7'/%3E%3C/svg%3E"><title>咬合消除 · 纯逻辑原型 v2.3</title><style>:root{--bg:#0e1117;--card:#161b24;--card2:#1d2431;--line:#2a3242;--text:#e9ecf3;--dim:#8d97ab;--accent:#ffb86b;--ok:#6ee7b7;--bad:#f87171;--safe-b:env(safe-area-inset-bottom,0px);}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}html,body{height:100%;}body{margin:0;background:radial-gradient(900px 600px at 50% -10%,#1a2130 0%,var(--bg) 60%);color:var(--text);font:14px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;user-select:none;overflow:hidden;}.app{height:100dvh;max-width:540px;margin:0 auto;padding:6px 8px calc(6px + var(--safe-b));display:flex;flex-direction:column;gap:6px;}.topbar{flex:none;display:flex;align-items:center;gap:6px;height:38px;}.lvtag{font-weight:600;font-size:14px;white-space:nowrap;}.lvtag b{color:var(--accent);}.lvtag .rule{font-weight:400;font-size:11px;color:var(--dim);margin-left:6px;}.spacer{flex:1;}.stat{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap;}button{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:5px 10px;cursor:pointer;transition:.15s;line-height:1.2;}button:active{transform:scale(.97);}button[disabled]{opacity:.38;cursor:not-allowed;}button.small{padding:4px 8px;font-size:12px;}button.primary{background:var(--accent);border-color:var(--accent);color:#241708;font-weight:700;}select{font:inherit;font-size:12px;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:4px 6px;max-width:120px;}em{font-style:normal;opacity:.75;font-size:11px;}.stage{flex:1;min-height:0;position:relative;}.board-wrap{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#151b27,#0f141d);border:1px solid var(--line);}.board{position:absolute;left:0;top:0;width:360px;height:520px;transform-origin:top left;}.piece{position:absolute;border-radius:12px;cursor:pointer;background:color-mix(in srgb,var(--c) 16%,#161b25);border:2px solid color-mix(in srgb,var(--c) 85%,#000);box-shadow:0 4px 10px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .15s,filter .15s,box-shadow .15s;}.piece .bump{position:absolute;top:-11%;left:50%;transform:translateX(-50%);width:44%;height:22%;border-radius:6px;background:var(--c);border:2px solid rgba(0,0,0,.32);}.piece.blank .bump{top:4%;height:24%;border-radius:5px;background:rgba(0,0,0,.5);width:50%;border:none;box-shadow:inset 0 3px 4px rgba(0,0,0,.7);}.piece .ori{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:10px;font-weight:700;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.85);pointer-events:none;line-height:1;}body:not(.debug) .piece.blocked .ori{visibility:hidden;}.piece{font-size:48px;}.piece .glyph{font-size:0.58em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none;}.piece{font-size:48px;}.piece .lock{display:none;position:absolute;right:2px;bottom:1px;font-size:9px;color:#c9d2e3;background:rgba(0,0,0,.45);border-radius:6px;padding:0 3px;line-height:1.4;}.piece .dbg{display:none;position:absolute;left:2px;top:1px;font-size:8px;color:#fff;opacity:.85;}.piece.blocked{filter:grayscale(.9) brightness(.62);cursor:default;}body:not(.debug) .piece.blocked{background:#212836;border-color:#333d4f;box-shadow:none;opacity:.95;}body:not(.debug) .piece.blocked .glyph{visibility:hidden;}body:not(.debug) .piece.blocked .bump{background:#333d4f;border-color:#333d4f;}body:not(.debug) .piece.blocked .lock{display:block;}body.debug .piece .dbg{display:block;}body.debug .piece.blocked .glyph{visibility:visible;opacity:.5;}.piece[data-color="red"]{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="blue"]{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.13) 0 2px,transparent 2px 6px);}.piece[data-color="green"]{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 2px,transparent 2px 7px);}.piece[data-color="yellow"]{background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.5px);background-size:6px 6px;}.piece[data-color="purple"]{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px),repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 1px,transparent 1px 5px);}.piece:not(.blocked):hover{transform:translateY(-2px);}.piece.hint{animation:hintPulse .7s infinite alternate;z-index:99999 !important;}@keyframes hintPulse{from{box-shadow:0 0 0 0 rgba(255,184,107,0)}to{box-shadow:0 0 0 5px rgba(255,184,107,.8)}}.piece.shake{animation:shake .3s;}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.piece.picked{transform:scale(.55) translateY(-24px);opacity:0;pointer-events:none;}.piece.unlocked{animation:unlock .5s;}@keyframes unlock{0%{box-shadow:0 0 0 0 rgba(110,231,183,.9)}100%{box-shadow:0 0 0 9px rgba(110,231,183,0)}}.progress-card{position:absolute;right:8px;top:8px;width:112px;padding:6px;border-radius:11px;background:rgba(13,17,24,.72);border:1px solid var(--line);backdrop-filter:blur(3px);}.progress-card .ptitle{font-size:10px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:4px;}.progress-grid{display:grid;gap:2px;grid-template-columns:repeat(6,1fr);}.pcell{aspect-ratio:1;border-radius:2px;background:#252d3c;transition:.2s;}.pcell.on{background:var(--ok);box-shadow:0 0 5px rgba(110,231,183,.5);}.pcell.pop{animation:pop .4s;}@keyframes pop{0%{transform:scale(.2)}60%{transform:scale(1.6)}100%{transform:scale(1)}}.bottom{flex:none;display:flex;flex-direction:column;gap:6px;align-items:center;}.tray{display:flex;gap:5px;justify-content:center;position:relative;}.bite-burst{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:rgba(110,231,183,.85);transform:translate(-50%,-50%);pointer-events:none;z-index:5;animation:burst .45s forwards;}@keyframes burst{0%{width:12px;height:12px;opacity:.95}100%{width:130px;height:130px;opacity:0}}.slot{width:46px;height:46px;border-radius:10px;border:2px dashed #39435a;background:#121823;display:flex;align-items:center;justify-content:center;position:relative;transition:.15s;}.slot.filled{border-style:solid;border-color:var(--c);background:color-mix(in srgb,var(--c) 26%,#151a24);}.slot .glyph{font-size:20px;color:#fff;}.slot .mark{position:absolute;right:4px;top:2px;font-size:9px;color:rgba(255,255,255,.7);}.slot .need{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,.72);white-space:nowrap;line-height:1.1;}.slot.ready{border-color:#6ee7b7;box-shadow:0 0 10px rgba(110,231,183,.42);}.slot.ready .need{color:#6ee7b7;}.tray.bite{animation:trayBite .4s;}@keyframes trayBite{0%{transform:scale(1)}35%{transform:scale(1.07)}100%{transform:scale(1)}}.recap{background:#10151e;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:#c7cfdd;text-align:left;line-height:1.7;margin:8px 0;}.slot.flash{animation:flash .45s;}@keyframes flash{0%{box-shadow:0 0 0 0 rgba(110,231,183,.95)}100%{box-shadow:0 0 0 16px rgba(110,231,183,0)}}.tray.warn .slot:not(.filled){border-color:#7a5b33;}.tray.danger .slot:not(.filled){border-color:#b34a4a;box-shadow:0 0 8px rgba(179,74,74,.3);}.actions{display:flex;gap:6px;justify-content:center;height:42px;align-items:stretch;width:100%;}.actions button{flex:1;max-width:120px;display:flex;align-items:center;justify-content:center;gap:3px;font-size:13px;}.debug-panel{position:fixed;left:0;right:0;bottom:0;max-height:62vh;overflow:auto;z-index:800;background:#11161f;border-top:1px solid var(--line);padding:12px 14px calc(16px + var(--safe-b));transform:translateY(102%);transition:transform .22s;font-size:12.5px;color:#c7cfdd;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.55);}.debug-panel.show{transform:translateY(0);}.debug-panel h3{margin:10px 0 6px;font-size:12px;color:var(--accent);}.debug-panel h3:first-child{margin-top:0;}.row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dashed #222a38;}.row span:first-child{color:var(--dim);}.debug-panel button{margin:6px 6px 0 0;font-size:12px;}.dbg-close{position:absolute;right:10px;top:8px;}.modal-bg{position:fixed;inset:0;background:rgba(4,6,10,.74);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}.modal-bg.show{display:flex;}.modal{width:min(92vw,380px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);}.modal h2{margin:0 0 6px;font-size:19px;}.modal p{margin:4px 0 14px;color:var(--dim);font-size:13px;line-height:1.6;}.modal .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}.modal button{min-width:96px;}.toast{position:fixed;left:50%;top:16%;transform:translate(-50%,-8px);opacity:0;pointer-events:none;background:#0b0e14;border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:10px;transition:.18s;z-index:1200;font-size:13px;max-width:80vw;text-align:center;}.toast.show{opacity:1;transform:translate(-50%,0);}.coach{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%);background:rgba(10,13,19,.92);border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:13px;z-index:700;max-width:88vw;text-align:center;display:none;}.coach.show{display:block;}@media (max-width:430px){#lvSelect{display:none;}#moves{display:none;}.lvtag .rule{display:none;}.topbar{gap:4px;overflow:hidden;}.stat{font-size:11px;}.progress-card{width:96px;right:6px;top:6px;}.slot{width:42px;height:42px;}}@media (max-height:640px){.progress-card{width:92px;}.slot{width:40px;height:40px;}.actions{height:38px;}}</style></head><body><div class="app"><header class="topbar"><button class="small" id="prevLv" aria-label="上一关">‹</button><div class="lvtag">第 <b id="lvNum">1</b> 关<span class="rule" id="lvRule">同形同色 · 一凸一凹</span></div><button class="small" id="nextLv" aria-label="下一关">›</button><select id="lvSelect" aria-label="选择关卡"></select><div class="spacer"></div><span class="stat" id="timer">00:00</span><span class="stat" id="moves">0 步</span><button class="small" id="btnMute" aria-label="音效开关">🔊</button><button class="small" id="btnRulesTop" aria-label="规则说明">?</button><button class="small" id="btnDebug" aria-label="调试面板">⚙</button></header><main class="stage"><div class="board-wrap" id="boardWrap"><div class="board" id="board" aria-label="盘面"></div><div class="progress-card"><div class="ptitle"><span>拼图进度</span><span id="progText">0/12</span></div><div class="progress-grid" id="progressGrid"></div></div></div></main><footer class="bottom"><div class="tray" id="tray"></div><div class="actions"><button id="btnHint">提示</button><button id="btnUndo">撤回 <em id="undoCount">2</em></button><button id="btnShuffle">洗牌 <em id="shuffleCount">1</em></button><button id="btnRestart">重开</button></div></footer></div><div class="debug-panel" id="debugPanel"><button class="small dbg-close" id="btnDebugClose">收起</button><h3>本关参数</h3><div class="row"><span>N / 层数 / 类型数</span><b id="dN">-</b></div><div class="row"><span>卡槽 / 初始可点 K</span><b id="dK">-</b></div><div class="row"><span>遮挡率 / 层极差</span><b id="dBlock">-</b></div><div class="row"><span>当前剩余 / 卡槽峰值</span><b id="dLeft">-</b></div><h3>当前盘可解性（规划机器人）</h3><div class="row"><span>可解率（60 次 rollout）</span><b id="dSolve">-</b></div><h3>工具</h3><button id="btnAuto">自动通关</button><button id="btnCheck">校验当前盘</button><button id="btnExport">导出埋点</button><button id="btnRules">规则说明</button><button id="btnDeadlock">制造死局</button><button id="btnRescueTest">救援回归</button><h3>本次会话</h3><div class="row"><span>事件数 / 首次咬合</span><b id="dEvents">-</b></div><div class="row"><span>卡槽峰值 / 死局次数</span><b id="dPeak">-</b></div><div class="row"><span>救援回归（5 样本）</span><b id="dRescue">-</b></div></div><div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div><div class="coach" id="coach"></div><script>(function (root, factory) {
+if (typeof module === 'object' && module.exports) module.exports = factory();
+else root.GameCore = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+'use strict';
+var SHAPES = ['circle', 'square', 'triangle', 'wave'];
+var COLORS = ['red', 'blue', 'green', 'yellow', 'purple'];
+var SHAPE_GLYPH = { circle: '●', square: '■', triangle: '▲', wave: '〰' };
+var SHAPE_NAME = { circle: '圆', square: '方', triangle: '三角', wave: '波浪' };
+var COLOR_HEX = {
+red: '#e8534a', blue: '#4f8cf7', green: '#39b96b',
+yellow: '#e5b32e', purple: '#a97bf0'
+};
+var COLOR_NAME = { red: '红', blue: '蓝', green: '绿', yellow: '黄', purple: '紫' };
+var TYPE_ORDER = [
+['circle', 'red'], ['square', 'blue'], ['triangle', 'green'], ['wave', 'yellow'],
+['circle', 'blue'], ['square', 'red'], ['triangle', 'yellow'], ['wave', 'green'],
+['circle', 'green'], ['square', 'yellow'], ['triangle', 'red'], ['wave', 'blue'],
+['circle', 'yellow'], ['square', 'green'], ['triangle', 'blue'], ['wave', 'red'],
+['circle', 'purple'], ['square', 'purple'], ['triangle', 'purple'], ['wave', 'purple']
+];
+var DIMS = { w: 360, h: 520 };
+var PILE = { x0: 0.08, y0: 0.06, x1: 0.92, y1: 0.94 };
+var OVERLAP_THR = 0.15;
+var LEVELS = [
+{ level: 1 , N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 1044 },
+{ level: 2 , N: 24, L: 2, T: 2, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 2044 },
+{ level: 3 , N: 30, L: 3, T: 3, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 3118 },
+{ level: 4 , N: 30, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 4044 },
+{ level: 5 , N: 36, L: 3, T: 4, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 5044 },
+{ level: 6 , N: 40, L: 3, T: 6, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 6229 },
+{ level: 7 , N: 44, L: 3, T: 8, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 7192 },
+{ level: 8 , N: 48, L: 3, T: 10, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 8229 },
+{ level: 9 , N: 48, L: 4, T: 10, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 9377 },
+{ level: 10, N: 60, L: 4, T: 12, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 10118 },
+{ level: 11, N: 60, L: 4, T: 12, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 11562 },
+{ level: 12, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 12895 },
+{ level: 13, N: 60, L: 4, T: 14, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 13451 },
+{ level: 14, N: 66, L: 4, T: 16, C: 6, maxHold: 5, matchProb: 0.45, freeRatio: 0, orient: true, seed: 14303 },
+{ level: 15, N: 66, L: 4, T: 16, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 15118 },
+{ level: 16, N: 72, L: 4, T: 18, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 16488 },
+{ level: 17, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 17340 },
+{ level: 18, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 18414 },
+{ level: 19, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 19192 },
+{ level: 20, N: 72, L: 4, T: 20, C: 5, maxHold: 4, matchProb: 0.45, freeRatio: 0, orient: true, seed: 20155 , estPass: 0.36 }
+];
+function mulberry32(a) {
+return function () {
+a |= 0; a = (a + 0x6D2B79F5) | 0;
+var t = Math.imul(a ^ (a >>> 15), 1 | a);
+t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+}
+function shuffle(arr, rng) {
+for (var i = arr.length - 1; i > 0; i--) {
+var j = Math.floor(rng() * (i + 1));
+var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+}
+return arr;
+}
+function pickSize(N) {
+if (N <= 32) return 56;
+if (N <= 48) return 50;
+if (N <= 60) return 46;
+if (N <= 72) return 44;
+return 38;
+}
+function overlapRatio(a, b) {
+var x1 = Math.max(a.x, b.x);
+var y1 = Math.max(a.y, b.y);
+var x2 = Math.min(a.x + a.size, b.x + b.size);
+var y2 = Math.min(a.y + a.size, b.y + b.size);
+if (x2 <= x1 || y2 <= y1) return 0;
+return ((x2 - x1) * (y2 - y1)) / (a.size * a.size);
+}
+function buildTypeCounts(N, T) {
+var pairCount = N / 2;
+var base = Math.floor(pairCount / T);
+var extra = pairCount % T;
+var counts = [];
+for (var i = 0; i < T; i++) counts.push(2 * (base + (i < extra ? 1 : 0)));
+return counts;
+}
+function buildSequence(counts, maxHold, matchProb, rng, requireOrient) {
+var N = counts.reduce(function (a, b) { return a + b; }, 0);
+var remain = counts.slice();
+var remainO = counts.map(function (c) { return [c / 2, c / 2]; });
+var tray = [];
+var seq = [];
+var total = N;
+var guard = 0;
+function consume(t, o) { remain[t]--; remainO[t][o]--; total--; seq.push({ t: t, o: o }); }
+while (total > 0) {
+if (++guard > N * 40) throw new Error('sequence generation stuck');
+var canMatch = tray.length > 0;
+var mustMatch = tray.length >= maxHold;
+var doMatch = canMatch && (mustMatch || rng() < matchProb);
+if (doMatch) {
+var ti = Math.floor(rng() * tray.length);
+var e = tray[ti];
+var need = requireOrient ? (1 - e.o) : (e.o);
+if (requireOrient) {
+if (remainO[e.t][need] > 0) { consume(e.t, need); tray.splice(ti, 1); }
+else { tray.splice(ti, 1); }
+} else {
+if (remain[e.t] > 0) { consume(e.t, e.o); tray.splice(ti, 1); }
+else { tray.splice(ti, 1); }
+}
+} else {
+var cand = [];
+for (var i = 0; i < counts.length; i++) {
+if (remain[i] > 0 && !tray.some(function (x) { return x.t === i; })) cand.push(i);
+}
+if (!cand.length) {
+if (!tray.length) throw new Error('no candidate & empty tray');
+var ti2 = Math.floor(rng() * tray.length);
+var e2 = tray[ti2];
+var need2 = requireOrient ? (1 - e2.o) : e2.o;
+if (requireOrient && remainO[e2.t][need2] > 0) consume(e2.t, need2);
+else if (!requireOrient && remain[e2.t] > 0) consume(e2.t, e2.o);
+tray.splice(ti2, 1);
+} else {
+var t3 = cand[Math.floor(rng() * cand.length)];
+var o3 = 0;
+if (requireOrient) {
+var avail = [remainO[t3][0] > 0, remainO[t3][1] > 0];
+if (avail[0] && avail[1]) o3 = rng() < 0.5 ? 0 : 1;
+else o3 = avail[0] ? 0 : 1;
+} else {
+o3 = remainO[t3][0] > 0 ? 0 : 1;
+if (remainO[t3][0] > 0 && remainO[t3][1] > 0) o3 = rng() < 0.5 ? 0 : 1;
+}
+consume(t3, o3);
+tray.push({ t: t3, o: o3 });
+}
+}
+}
+return seq;
+}
+function layerSizes(N, L) {
+var base = Math.floor(N / L);
+var extra = N % L;
+var sizes = [];
+for (var i = 0; i < L; i++) sizes.push(base + (i < extra ? 1 : 0));
+return sizes;
+}
+function buildCells(layer, size) {
+var cell = size * 1.02;
+var offX = (layer % 2) ? cell * 0.5 : 0;
+var offY = (layer % 2) ? cell * 0.5 : 0;
+var x0 = DIMS.w * PILE.x0, y0 = DIMS.h * PILE.y0;
+var x1 = DIMS.w * PILE.x1, y1 = DIMS.h * PILE.y1;
+var cols = Math.max(1, Math.floor((x1 - x0 - size - offX) / cell) + 1);
+var rows = Math.max(1, Math.floor((y1 - y0 - size - offY) / cell) + 1);
+var cells = [];
+for (var r = 0; r < rows; r++) {
+for (var c = 0; c < cols; c++) {
+cells.push({ x: x0 + offX + c * cell, y: y0 + offY + r * cell, size: size });
+}
+}
+return cells;
+}
+function placePieces(pieces, L, size, freeRatio, rng) {
+var byLayer = {};
+pieces.forEach(function (p) { (byLayer[p.layer] = byLayer[p.layer] || []).push(p); });
+var placedHigher = [];
+for (var l = L - 1; l >= 0; l--) {
+var list = byLayer[l] || [];
+if (!list.length) continue;
+var cells = shuffle(buildCells(l, size), rng);
+var used = {};
+var upperList = placedHigher;
+var free = [], covered = [];
+cells.forEach(function (cell) {
+var hit = false;
+for (var q = 0; q < upperList.length; q++) {
+if (overlapRatio(cell, upperList[q]) >= OVERLAP_THR) { hit = true; break; }
+}
+(hit ? covered : free).push(cell);
+});
+var order = list.slice();
+shuffle(order, rng);
+order.forEach(function (p, idx) {
+var wantFree = l < L - 1 && rng() < freeRatio;
+var pool = wantFree ? free : covered;
+if (!pool.length) pool = wantFree ? covered : free;
+if (!pool.length) pool = cells;
+var cell = null;
+for (var k = 0; k < pool.length; k++) {
+var key = pool[k].x + ',' + pool[k].y;
+if (!used[key]) { cell = pool[k]; used[key] = true; break; }
+}
+if (!cell) {
+for (var m = 0; m < cells.length; m++) {
+var key2 = cells[m].x + ',' + cells[m].y;
+if (!used[key2]) { cell = cells[m]; used[key2] = true; break; }
+}
+}
+if (cell) {
+p.x = Math.round(cell.x + (rng() - 0.5) * 2);
+p.y = Math.round(cell.y + (rng() - 0.5) * 2);
+} else {
+p.x = Math.round(PILE.x0 * DIMS.w + rng() * 40);
+p.y = Math.round(PILE.y0 * DIMS.h + rng() * 40);
+}
+});
+placedHigher = placedHigher.concat(list);
+}
+}
+function computeBlocked(pieces) {
+var i, j;
+for (i = 0; i < pieces.length; i++) pieces[i].blockedBy = [];
+for (i = 0; i < pieces.length; i++) {
+var p = pieces[i];
+for (j = 0; j < pieces.length; j++) {
+var q = pieces[j];
+if (q.layer <= p.layer) continue;
+if (overlapRatio(p, q) >= OVERLAP_THR) p.blockedBy.push(q.id);
+}
+}
+}
+function generateLevel(cfg, seed) {
+var rng = mulberry32((cfg.seed || seed || (cfg.level * 7919 + 13)) >>> 0);
+var N = cfg.N, L = cfg.L, T = Math.min(cfg.T, TYPE_ORDER.length);
+var size = pickSize(N);
+var counts = buildTypeCounts(N, T);
+var requireOrient = !!cfg.orient;
+var seqItems = buildSequence(counts, cfg.maxHold, cfg.matchProb, rng, requireOrient);
+var sizes = layerSizes(N, L);
+var layerOf = new Array(N);
+var seg = 0, acc = sizes[0];
+for (var i = 0; i < N; i++) {
+while (i >= acc && seg < L - 1) { seg++; acc += sizes[seg]; }
+layerOf[i] = L - 1 - seg;
+}
+var pieces = [];
+var seen = {};
+for (var idx = 0; idx < N; idx++) {
+var t = seqItems[idx].t;
+var type = TYPE_ORDER[t];
+pieces.push({
+id: idx,
+layer: layerOf[idx],
+x: 0, y: 0, size: size,
+typeIndex: t,
+shape: type[0],
+color: type[1],
+orientation: seqItems[idx].o === 0 ? 'tab' : 'blank',
+blockedBy: []
+});
+}
+placePieces(pieces, L, size, cfg.freeRatio || 0, rng);
+computeBlocked(pieces);
+var blocks = pieces.map(function () { return []; });
+pieces.forEach(function (p) {
+p.blockedBy.forEach(function (qid) { blocks[qid].push(p.id); });
+});
+var solution = [];
+for (var s = 0; s < N; s++) solution.push(s);
+var kStart = 0;
+pieces.forEach(function (p) { if (!p.blockedBy.length) kStart++; });
+var layerCounts = new Array(L).fill(0);
+pieces.forEach(function (p) { layerCounts[L - 1 - p.layer]++; });
+return {
+cfg: cfg,
+pieces: pieces,
+blocks: blocks,
+solution: solution,
+meta: {
+size: size,
+kStart: kStart,
+blockedRate: (N - kStart) / N,
+layerSizes: layerCounts,
+layerSpread: Math.max.apply(null, layerCounts) - Math.min.apply(null, layerCounts),
+typeCount: T
+}
+};
+}
+function canMatch(a, b, requireOrient) {
+if (a.shape !== b.shape || a.color !== b.color) return false;
+if (requireOrient) return a.orientation !== b.orientation;
+return true;
+}
+function verifySequence(level, alive, trayIds) {
+var n = level.pieces.length;
+var count = new Array(n);
+var live = new Array(n);
+var i;
+for (i = 0; i < n; i++) {
+count[i] = level.pieces[i].blockedBy.length;
+live[i] = alive ? !!alive[i] : true;
+}
+var tray = [];
+if (trayIds) for (var ti = 0; ti < trayIds.length; ti++) tray.push(level.pieces[trayIds[ti]]);
+var maxTray = tray.length;
+var C = level.cfg.C;
+for (var s = 0; s < level.solution.length; s++) {
+var id = level.solution[s];
+if (!live[id]) continue;
+if (count[id] > 0) return { ok: false, reason: '解序列中仍被压住', step: s, id: id, blockers: count[id] };
+live[id] = false;
+var bl = level.blocks[id];
+for (var b = 0; b < bl.length; b++) count[bl[b]]--;
+var pc = level.pieces[id];
+var mi = -1;
+for (var j = 0; j < tray.length; j++) {
+if (canMatch(pc, tray[j], level.cfg.orient)) { mi = j; break; }
+}
+if (mi >= 0) tray.splice(mi, 1);
+else tray.push(pc);
+if (tray.length > maxTray) maxTray = tray.length;
+if (tray.length > C) return { ok: false, reason: '解序列超出卡槽容量', step: s, tray: tray.length };
+}
+var left = 0;
+for (i = 0; i < n; i++) if (live[i]) left++;
+return { ok: left === 0 && tray.length === 0, reason: left ? '有剩余碎片' : (tray.length ? '卡槽残留' : ''), leftover: left, maxTray: maxTray };
+}
+function verifySolution(level) { return verifySequence(level, null); }
+function unblockedList(pieces, alive, count) {
+var out = [];
+for (var i = 0; i < pieces.length; i++) if (alive[i] && count[i] === 0) out.push(i);
+return out;
+}
+function findTrayMatch(level, state, pc) {
+for (var i = 0; i < state.tray.length; i++) {
+if (canMatch(pc, level.pieces[state.tray[i]], level.cfg.orient)) return i;
+}
+return -1;
+}
+function applyPick(level, state, id) {
+state.alive[id] = false;
+var bl = level.blocks[id];
+for (var b = 0; b < bl.length; b++) state.count[bl[b]]--;
+var mi = findTrayMatch(level, state, level.pieces[id]);
+if (mi >= 0) { state.tray.splice(mi, 1); return true; }
+state.tray.push(id);
+return false;
+}
+function choosePlanning(level, state, cands) {
+var pieces = level.pieces, C = level.cfg.C;
+var bestComp = {};
+var alive = state.alive;
+for (var i = 0; i < pieces.length; i++) {
+if (!alive[i]) continue;
+var p = pieces[i];
+var bl = 0;
+for (var b = 0; b < p.blockedBy.length; b++) if (alive[p.blockedBy[b]]) bl++;
+var key = p.typeIndex + '|' + p.orientation;
+if (bestComp[key] === undefined || bl < bestComp[key]) bestComp[key] = bl;
+}
+var unblocked = {};
+for (var u = 0; u < cands.length; u++) unblocked[cands[u]] = true;
+var best = -1, bestScore = -Infinity;
+for (var c = 0; c < cands.length; c++) {
+var id = cands[c];
+var pc = pieces[id];
+var mi = findTrayMatch(level, state, pc);
+var match = mi >= 0;
+var score = match ? 5000 : 0;
+score += level.blocks[id].length * 20;
+if (!match) {
+var compKey = pc.typeIndex + '|' + (pc.orientation === 'tab' ? 'blank' : 'tab');
+var dist = bestComp[compKey];
+score += dist === undefined ? 0 : 150 / (1 + dist);
+score -= state.tray.length * 30;
+if (state.tray.length >= C - 1) score -= 2500;
+if (state.tray.length + 1 >= C) {
+var newTray = state.tray.slice();
+newTray.push(id);
+var hasNext = false;
+for (var k = 0; k < cands.length && !hasNext; k++) {
+if (cands[k] === id) continue;
+for (var t = 0; t < newTray.length; t++) {
+if (canMatch(pieces[cands[k]], pieces[newTray[t]], level.cfg.orient)) { hasNext = true; break; }
+}
+}
+if (!hasNext) score -= 100000;
+}
+} else {
+score += level.blocks[id].length * 10;
+}
+if (score > bestScore) { bestScore = score; best = id; }
+}
+return best;
+}
+function initState(level, alive, tray) {
+var n = level.pieces.length;
+var a = alive ? alive.slice() : new Array(n).fill(true);
+var count = new Array(n);
+for (var i = 0; i < n; i++) {
+count[i] = 0;
+if (!a[i]) continue;
+var bb = level.pieces[i].blockedBy;
+for (var k = 0; k < bb.length; k++) if (a[bb[k]]) count[i]++;
+}
+return { alive: a, count: count, tray: tray ? tray.slice() : [] };
+}
+function playFromState(level, state, strategy, rng) {
+var n = level.pieces.length;
+var C = level.cfg.C;
+var moves = 0, maxTray = 0, minK = Infinity;
+while (true) {
+var left = 0;
+for (var i = 0; i < n; i++) if (state.alive[i]) left++;
+if (left === 0) return { win: true, moves: moves, maxTray: maxTray, minK: minK };
+var cands = unblockedList(level.pieces, state.alive, state.count);
+if (!cands.length) return { win: false, reason: 'no-move', moves: moves, maxTray: maxTray, minK: minK };
+if (cands.length < minK) minK = cands.length;
+var matchable = [];
+for (var c = 0; c < cands.length; c++) {
+if (findTrayMatch(level, state, level.pieces[cands[c]]) >= 0) matchable.push(cands[c]);
+}
+if (state.tray.length >= C && !matchable.length) {
+return { win: false, reason: 'deadlock', moves: moves, maxTray: maxTray, minK: minK };
+}
+var pool = (state.tray.length >= C) ? matchable : cands;
+var pick;
+if (strategy === 'random') {
+pick = pool[Math.floor(rng() * pool.length)];
+} else if (strategy === 'greedy') {
+if (matchable.length) {
+var bestM = matchable[0], bestU = -1;
+for (var mm = 0; mm < matchable.length; mm++) {
+var u = level.blocks[matchable[mm]].length;
+if (u > bestU) { bestU = u; bestM = matchable[mm]; }
+}
+pick = bestM;
+} else {
+pick = pool[Math.floor(rng() * pool.length)];
+}
+} else {
+pick = choosePlanning(level, state, pool);
+}
+applyPick(level, state, pick);
+if (state.tray.length > maxTray) maxTray = state.tray.length;
+moves++;
+}
+}
+function playOnce(level, strategy, rng) {
+return playFromState(level, initState(level, null, null), strategy, rng);
+}
+function simulate(level, trials, seed, strategy) {
+trials = trials || 200;
+var rng = mulberry32((seed || 99) >>> 0);
+var wins = 0, moves = 0, tray = 0, dead = 0;
+for (var t = 0; t < trials; t++) {
+var r = playOnce(level, strategy || 'greedy', rng);
+if (r.win) wins++;
+if (r.reason === 'deadlock') dead++;
+moves += r.moves; tray += r.maxTray;
+}
+return {
+trials: trials,
+winRate: wins / trials,
+deadlockRate: 1 - wins / trials,
+hardDeadlockRate: dead / trials,
+avgMoves: moves / trials,
+avgTrayPeak: tray / trials
+};
+}
+function choosePlanningK(level, state, cands, k, rng) {
+var C = level.cfg.C, pieces = level.pieces;
+var scored = [];
+for (var i = 0; i < cands.length; i++) {
+var id = cands[i], pc = pieces[id];
+var match = findTrayMatch(level, state, pc) >= 0;
+var sc = match ? 5000 : 0;
+sc += level.blocks[id].length * 30;
+var same = 0;
+for (var j = 0; j < cands.length; j++) {
+if (cands[j] !== id && canMatch(pieces[cands[j]], pc, level.cfg.orient)) same++;
+}
+sc += same * 12;
+sc -= state.tray.length * 25;
+if (state.tray.length >= C - 1 && !match) sc -= 3000;
+scored.push({ id: id, sc: sc });
+}
+scored.sort(function (a, b) { return b.sc - a.sc; });
+var top = scored.slice(0, Math.max(1, Math.min(k, scored.length)));
+return top[Math.floor(rng() * top.length)].id;
+}
+function rebuildSolution(level, alive, tray, seed) {
+for (var attempt = 0; attempt < 30; attempt++) {
+var rng = mulberry32(((seed || 1) + attempt * 977) >>> 0);
+var st = initState(level, alive, tray);
+var picks = [];
+var guard = 0;
+while (true) {
+var left = 0;
+for (var i = 0; i < st.alive.length; i++) if (st.alive[i]) left++;
+if (left === 0) return st.tray.length === 0 ? picks : null;
+if (++guard > level.pieces.length * 4) break;
+var cands = unblockedList(level.pieces, st.alive, st.count);
+if (!cands.length) break;
+var matchable = [];
+for (var c = 0; c < cands.length; c++) {
+if (findTrayMatch(level, st, level.pieces[cands[c]]) >= 0) matchable.push(cands[c]);
+}
+if (st.tray.length >= level.cfg.C && !matchable.length) break;
+var pool = st.tray.length >= level.cfg.C ? matchable : cands;
+var pick = choosePlanningK(level, st, pool, 3, rng);
+picks.push(pick);
+applyPick(level, st, pick);
+}
+}
+return null;
+}
+function simulateFromState(level, alive, tray, trials, seed, strategy) {
+trials = trials || 60;
+var rng = mulberry32((seed || 7) >>> 0);
+var wins = 0;
+for (var t = 0; t < trials; t++) {
+var st = initState(level, alive, tray);
+if (playFromState(level, st, strategy || 'planning', rng).win) wins++;
+}
+return { trials: trials, winRate: wins / trials };
+}
+function simulateStrategies(level, trials, seed) {
+return {
+random: simulate(level, trials, seed, 'random'),
+greedy: simulate(level, trials, (seed || 99) + 1, 'greedy'),
+planning: simulate(level, trials, (seed || 99) + 2, 'planning')
+};
+}
+function kCurve(level) {
+var n = level.pieces.length;
+var count = level.pieces.map(function (p) { return p.blockedBy.length; });
+var alive = new Array(n).fill(true);
+var out = [];
+for (var s = 0; s < level.solution.length; s++) {
+var k = 0;
+for (var i = 0; i < n; i++) if (alive[i] && count[i] === 0) k++;
+out.push(k);
+var id = level.solution[s];
+alive[id] = false;
+level.blocks[id].forEach(function (x) { count[x]--; });
+}
+return out;
+}
+function kStats(level) {
+var c = kCurve(level).slice().sort(function (a, b) { return a - b; });
+if (!c.length) return { p10: 0, min: 0, avg: 0 };
+return {
+p10: c[Math.floor(c.length * 0.1)],
+min: c[0],
+avg: c.reduce(function (a, b) { return a + b; }, 0) / c.length
+};
+}
+function reshuffle(level, alive, seed) {
+var rng = mulberry32((seed || Date.now()) >>> 0);
+var snapX = [], snapY = [], snapBlocked = [];
+level.pieces.forEach(function (p) { snapX.push(p.x); snapY.push(p.y); snapBlocked.push(p.blockedBy.slice()); });
+var snapBlocks = level.blocks, snapSol = level.solution;
+function rollback() {
+level.pieces.forEach(function (p, i) { p.x = snapX[i]; p.y = snapY[i]; p.blockedBy = snapBlocked[i].slice(); });
+level.blocks = snapBlocks; level.solution = snapSol;
+}
+var groups = {};
+level.pieces.forEach(function (p) {
+if (alive[p.id]) (groups[p.layer] = groups[p.layer] || []).push(p);
+});
+var layers = Object.keys(groups).map(Number).sort(function (a, b) { return b - a; });
+var placedHigher = [];
+layers.forEach(function (l) {
+var list = groups[l];
+var cells = shuffle(buildCells(l, list[0].size), rng);
+var upper = placedHigher;
+var free = [], covered = [];
+cells.forEach(function (cell) {
+var hit = false;
+for (var q = 0; q < upper.length; q++) {
+if (overlapRatio(cell, upper[q]) >= OVERLAP_THR) { hit = true; break; }
+}
+(hit ? covered : free).push(cell);
+});
+var used = {};
+list.forEach(function (p) {
+var pool = covered.length ? covered : (free.length ? free : cells);
+var cell = null;
+for (var k = 0; k < pool.length; k++) {
+var key = pool[k].x + ',' + pool[k].y;
+if (!used[key]) { cell = pool[k]; used[key] = true; break; }
+}
+if (!cell) {
+for (var m = 0; m < cells.length; m++) {
+var key2 = cells[m].x + ',' + cells[m].y;
+if (!used[key2]) { cell = cells[m]; used[key2] = true; break; }
+}
+}
+p.x = Math.round(cell.x + (rng() - 0.5) * 2);
+p.y = Math.round(cell.y + (rng() - 0.5) * 2);
+});
+placedHigher = placedHigher.concat(list);
+});
+level.pieces.forEach(function (p) { p.blockedBy = []; });
+level.pieces.forEach(function (p) {
+if (!alive[p.id]) return;
+level.pieces.forEach(function (q) {
+if (!alive[q.id]) return;
+if (q.layer <= p.layer) return;
+if (overlapRatio(p, q) >= OVERLAP_THR) p.blockedBy.push(q.id);
+});
+});
+level.blocks = level.pieces.map(function () { return []; });
+level.pieces.forEach(function (p) {
+if (!alive[p.id]) return;
+p.blockedBy.forEach(function (qid) { level.blocks[qid].push(p.id); });
+});
+var filtered = level.solution.filter(function (id) { return alive[id]; });
+var test = verifySequence({ pieces: level.pieces, blocks: level.blocks, solution: filtered, cfg: level.cfg }, alive);
+if (test.ok) { level.solution = filtered; return { ok: true, solution: filtered, verify: test }; }
+var rebuilt = rebuildSolution(level, alive, [], seed || Date.now());
+if (rebuilt) {
+level.solution = rebuilt;
+var t2 = verifySequence({ pieces: level.pieces, blocks: level.blocks, solution: rebuilt, cfg: level.cfg }, alive);
+if (t2.ok) return { ok: true, solution: rebuilt, rebuilt: true, verify: t2 };
+}
+rollback();
+return { ok: false, reason: '洗牌后未能重建解序列', rolledBack: true };
+}
+function revive(level, alive, trayIds) {
+var back = (trayIds || []).slice();
+var newAlive = alive.slice();
+for (var i = 0; i < back.length; i++) newAlive[back[i]] = true;
+var r = reshuffle(level, newAlive, Date.now());
+if (!r.ok) return { ok: false, reason: r.reason || '重排失败', back: back };
+var ver = verifySequence(level, newAlive, []);
+if (!ver.ok) return { ok: false, reason: '重建解校验失败：' + ver.reason, back: back };
+return { ok: true, alive: newAlive, tray: [], solution: r.solution, back: back, verify: ver };
+}
+function shuffleBoard(level, alive, trayIds, seed) {
+var back = (trayIds || []).slice();
+var newAlive = alive.slice();
+for (var i = 0; i < back.length; i++) newAlive[back[i]] = true;
+var r = reshuffle(level, newAlive, seed || Date.now());
+if (!r.ok) return { ok: false, reason: r.reason || '重排失败', back: back };
+var ver = verifySequence(level, newAlive, []);
+if (!ver.ok) return { ok: false, reason: '重建解校验失败：' + ver.reason, back: back };
+return { ok: true, alive: newAlive, tray: [], solution: r.solution, back: back, verify: ver };
+}
+function parityOk(level, alive, trayIds) {
+var inTray = {};
+(trayIds || []).forEach(function (id) { inTray[id] = true; });
+var byType = {};
+level.pieces.forEach(function (p) {
+if (!alive[p.id] && !inTray[p.id]) return;
+if (!byType[p.typeIndex]) byType[p.typeIndex] = { tab: 0, blank: 0 };
+byType[p.typeIndex][p.orientation]++;
+});
+var bad = [];
+Object.keys(byType).forEach(function (t) {
+if (byType[t].tab !== byType[t].blank) bad.push(t);
+});
+return { ok: bad.length === 0, bad: bad };
+}
+function randomDeadlock(level, seed, maxMoves) {
+var rng = mulberry32((seed || 1) >>> 0);
+var st = initState(level, null, null);
+var n = level.pieces.length;
+var moves = 0;
+while (moves < (maxMoves || 2000)) {
+var left = 0;
+for (var i = 0; i < n; i++) if (st.alive[i]) left++;
+if (left === 0) return { dead: false, win: true, alive: st.alive, tray: st.tray, moves: moves };
+var cands = unblockedList(level.pieces, st.alive, st.count);
+if (!cands.length) return { dead: true, alive: st.alive, tray: st.tray, moves: moves };
+var matchable = cands.filter(function (id) {
+return findTrayMatch(level, st, level.pieces[id]) >= 0;
+});
+if (st.tray.length >= level.cfg.C && !matchable.length) {
+return { dead: true, alive: st.alive, tray: st.tray, moves: moves };
+}
+var pool = st.tray.length >= level.cfg.C ? matchable : cands;
+var pick = pool[Math.floor(rng() * pool.length)];
+applyPick(level, st, pick);
+moves++;
+}
+return { dead: false, timeout: true, alive: st.alive, tray: st.tray, moves: moves };
+}
+return {
+SHAPES: SHAPES,
+COLORS: COLORS,
+SHAPE_GLYPH: SHAPE_GLYPH,
+SHAPE_NAME: SHAPE_NAME,
+COLOR_HEX: COLOR_HEX,
+COLOR_NAME: COLOR_NAME,
+TYPE_ORDER: TYPE_ORDER,
+LEVELS: LEVELS,
+DIMS: DIMS,
+PILE: PILE,
+OVERLAP_THR: OVERLAP_THR,
+mulberry32: mulberry32,
+pickSize: pickSize,
+generateLevel: generateLevel,
+canMatch: canMatch,
+verifySolution: verifySolution,
+verifySequence: verifySequence,
+simulate: simulate,
+simulateStrategies: simulateStrategies,
+simulateFromState: simulateFromState,
+rebuildSolution: rebuildSolution,
+kCurve: kCurve,
+kStats: kStats,
+reshuffle: reshuffle,
+revive: revive,
+shuffleBoard: shuffleBoard,
+parityOk: parityOk,
+randomDeadlock: randomDeadlock,
+initState: initState,
+applyPick: applyPick,
+unblockedList: unblockedList,
+findTrayMatch: findTrayMatch,
+unblockedIds: function (level, alive) {
+var count = level.pieces.map(function (p) { return p.blockedBy.length; });
+return unblockedList(level.pieces, alive, count);
+},
+overlapRatio: overlapRatio
+};
+});</script><script>(function(){
+'use strict';
+var G = window.GameCore;
+var $ = function(id){ return document.getElementById(id); };
+var board = $('board'), boardWrap = $('boardWrap'), trayEl = $('tray');
+var progressGrid = $('progressGrid'), modalBg = $('modalBg'), modal = $('modal');
+var toastEl = $('toast'), coachEl = $('coach'), dbgPanel = $('debugPanel');
+var S = null;
+var pieceEls = {};
+var timerHandle = null;
+var lastBlockedTap = 0;
+var AC = null;
+var muted = false;
+try { muted = localStorage.getItem('yjxx_muted') === '1'; } catch(e){}
+function ac(){
+if (!AC) {
+var Ctor = window.AudioContext || window.webkitAudioContext;
+if (!Ctor) return null;
+AC = new Ctor();
+}
+if (AC.state === 'suspended') AC.resume();
+return AC;
+}
+function tone(freq, dur, type, gain, slideTo){
+if (muted) return;
+var ctx = ac(); if (!ctx) return;
+var o = ctx.createOscillator(), g = ctx.createGain();
+o.type = type || 'sine';
+o.frequency.setValueAtTime(freq, ctx.currentTime);
+if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, ctx.currentTime + dur);
+g.gain.setValueAtTime(gain || 0.06, ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+o.connect(g); g.connect(ctx.destination);
+o.start(); o.stop(ctx.currentTime + dur + 0.02);
+}
+var SFX = {
+pick: function(){ tone(520, 0.06, 'triangle', 0.05); },
+snap: function(){ tone(520, 0.08, 'sine', 0.07, 900); setTimeout(function(){ tone(1100, 0.07, 'triangle', 0.05); }, 40); },
+unlock: function(){ tone(900, 0.07, 'sine', 0.035, 1300); },
+fail: function(){ tone(220, 0.18, 'sawtooth', 0.05, 140); },
+combo: function(n){ tone(700 + n * 120, 0.08, 'triangle', 0.06, 1100 + n * 120); }
+};
+var EVENTS = [];
+try { EVENTS = JSON.parse(localStorage.getItem('yjxx_events') || '[]'); } catch(e){ EVENTS = []; }
+function track(name, data){
+var ev = { ts: Date.now(), name: name };
+if (S) { ev.level = S.cfg.level; ev.t = Date.now() - S.start; }
+if (data) for (var k in data) ev[k] = data[k];
+EVENTS.push(ev);
+try { localStorage.setItem('yjxx_events', JSON.stringify(EVENTS.slice(-3000))); } catch(e){}
+updateDebug();
+}
+function fmtTime(ms){
+var s = Math.floor(ms / 1000);
+return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function toast(msg){
+toastEl.textContent = msg;
+toastEl.classList.add('show');
+clearTimeout(toast._t);
+toast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1100);
+}
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function blockedCount(id){
+var n = 0, bb = S.level.pieces[id].blockedBy;
+for (var i = 0; i < bb.length; i++) if (S.alive[bb[i]]) n++;
+return n;
+}
+function aliveCount(){
+var n = 0;
+for (var i = 0; i < S.alive.length; i++) if (S.alive[i]) n++;
+return n;
+}
+function loadLevel(idx){
+var cfg = G.LEVELS[idx];
+var level = G.generateLevel(cfg, 0);
+S = {
+idx: idx, cfg: cfg, level: level,
+alive: level.pieces.map(function(){ return true; }),
+tray: [], progress: 0, moves: 0, start: Date.now(),
+dead: false, won: false, auto: false,
+history: [], undosLeft: 2, shufflesLeft: 1,
+trayPeak: 0, deadlocks: 0, combos: 0, lastMerge: 0, firstMatch: 0, recent: [],
+coach: cfg.level === 1 ? 0 : -1
+};
+pieceEls = {};
+$('lvNum').textContent = cfg.level;
+$('lvSelect').value = String(cfg.level);
+$('lvRule').textContent = '同形同色 · 一凸一凹 · 卡槽 ' + cfg.C;
+$('undoCount').textContent = S.undosLeft;
+$('shuffleCount').textContent = S.shufflesLeft;
+$('timer').textContent = '00:00';
+$('moves').textContent = '0 步';
+$('progText').textContent = '0/' + (cfg.N / 2);
+clearTimeout(toast._t); toastEl.classList.remove('show');
+coachEl.classList.remove('show');
+closeModal();
+renderBoard();
+renderTray();
+renderProgress();
+updateStats();
+track('level_start', { N: cfg.N, L: cfg.L, T: cfg.T, C: cfg.C });
+clearInterval(timerHandle);
+timerHandle = setInterval(function(){
+if (S && !S.won && !S.dead) $('timer').textContent = fmtTime(Date.now() - S.start);
+}, 500);
+setTimeout(fitBoard, 20);
+updateDebug();
+maybeCoach();
+}
+function fitBoard(){
+var W = boardWrap.clientWidth, H = boardWrap.clientHeight;
+if (!W || !H) return;
+var s = Math.min(W / G.DIMS.w, H / G.DIMS.h);
+board.style.transform = 'scale(' + s + ')';
+board.style.left = Math.max(0, (W - G.DIMS.w * s) / 2) + 'px';
+board.style.top = Math.max(0, (H - G.DIMS.h * s) / 2) + 'px';
+}
+window.addEventListener('resize', fitBoard);
+function renderBoard(){
+board.innerHTML = '';
+pieceEls = {};
+var frag = document.createDocumentFragment();
+for (var i = 0; i < S.level.pieces.length; i++){
+var p = S.level.pieces[i];
+if (!S.alive[p.id]) continue;
+var el = document.createElement('div');
+el.className = 'piece ' + (p.orientation === 'tab' ? 'tab' : 'blank');
+el.dataset.id = p.id;
+el.style.left = p.x + 'px';
+el.style.top = p.y + 'px';
+el.style.width = p.size + 'px';
+el.style.height = p.size + 'px';
+el.style.zIndex = p.layer * 10000 + p.id;
+el.style.setProperty('--c', G.COLOR_HEX[p.color]);
+el.dataset.color = p.color;
+el.style.fontSize = p.size + 'px';
+el.setAttribute('role', 'button');
+el.setAttribute('tabindex', '0');
+el.innerHTML =
+'<span class="bump"></span>' +
+'<span class="glyph">' + G.SHAPE_GLYPH[p.shape] + '</span>' +
+'<span class="ori">' + (p.orientation === 'tab' ? '凸' : '凹') + '</span>' +
+'<span class="lock">0</span>' +
+'<span class="dbg">#' + p.id + '</span>';
+frag.appendChild(el);
+pieceEls[p.id] = el;
+}
+board.appendChild(frag);
+updatePieceEls();
+}
+function updatePieceEls(){
+for (var id in pieceEls){
+var el = pieceEls[id];
+if (!el) continue;
+if (!S.alive[id]) { el.style.display = 'none'; continue; }
+var b = blockedCount(+id);
+el.classList.toggle('blocked', b > 0);
+el.setAttribute('aria-label',
+G.SHAPE_NAME[S.level.pieces[id].shape] + G.COLOR_NAME[S.level.pieces[id].color] +
+'，' + (S.level.pieces[id].orientation === 'tab' ? '凸' : '凹') +
+(b ? '，被 ' + b + ' 块压住' : '，可点'));
+var lock = el.querySelector('.lock');
+if (lock) lock.textContent = b ? ('压' + b) : '';
+var dbg = el.querySelector('.dbg');
+if (dbg) dbg.textContent = '#' + id + ' b' + b;
+}
+updateStats();
+}
+function renderTray(){
+trayEl.innerHTML = '';
+trayEl.classList.toggle('warn', S.tray.length >= S.cfg.C - 2 && S.tray.length < S.cfg.C - 1);
+trayEl.classList.toggle('danger', S.tray.length >= S.cfg.C - 1);
+for (var i = 0; i < S.cfg.C; i++){
+var slot = document.createElement('div');
+slot.className = 'slot';
+var id = S.tray[i];
+if (id !== undefined){
+var p = S.level.pieces[id];
+slot.classList.add('filled');
+slot.style.setProperty('--c', G.COLOR_HEX[p.color]);
+slot.dataset.pid = id;
+var need = p.orientation === 'tab' ? '凹' : '凸';
+var ready = false;
+for (var k = 0; k < S.alive.length; k++){
+if (!S.alive[k] || blockedCount(k) > 0) continue;
+if (G.canMatch(p, S.level.pieces[k], S.cfg.orient)) { ready = true; break; }
+}
+slot.classList.toggle('ready', ready);
+slot.innerHTML = '<span class="glyph">' + G.SHAPE_GLYPH[p.shape] + '</span>' +
+'<span class="mark">' + (p.orientation === 'tab' ? '凸' : '凹') + '</span>' +
+'<span class="need">缺' + need + '</span>';
+}
+trayEl.appendChild(slot);
+}
+}
+function renderProgress(){
+var total = S.cfg.N / 2;
+var cols = Math.ceil(Math.sqrt(total));
+progressGrid.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)';
+progressGrid.innerHTML = '';
+for (var i = 0; i < total; i++){
+var c = document.createElement('div');
+c.className = 'pcell' + (i < S.progress ? ' on' : '');
+progressGrid.appendChild(c);
+}
+$('progText').textContent = S.progress + '/' + total;
+}
+function popProgressCell(){
+var cells = progressGrid.children;
+var i = S.progress - 1;
+if (cells[i]) { cells[i].classList.add('on', 'pop'); }
+$('progText').textContent = S.progress + '/' + (S.cfg.N / 2);
+}
+function updateStats(){
+if (!S) return;
+$('moves').textContent = S.moves + ' 步';
+$('undoCount').textContent = S.undosLeft;
+$('shuffleCount').textContent = S.shufflesLeft;
+}
+function pieceAt(clientX, clientY){
+var el = document.elementFromPoint(clientX, clientY);
+var pe = el && el.closest ? el.closest('.piece') : null;
+var best = null;
+for (var id in pieceEls){
+var e = pieceEls[id];
+if (!e || !S.alive[id]) continue;
+if (blockedCount(+id) > 0) continue;
+var r = e.getBoundingClientRect();
+var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+var d = Math.hypot(clientX - cx, clientY - cy);
+if (!best || d < best.d) best = { id: +id, d: d };
+}
+if (pe && pe.dataset.id !== undefined) return { id: +pe.dataset.id, exact: true };
+if (best && best.d <= 24) return { id: best.id, exact: false };
+return null;
+}
+board.addEventListener('pointerdown', function(e){
+if (!S || S.dead || S.won || S.auto) return;
+var hit = pieceAt(e.clientX, e.clientY);
+if (!hit) return;
+if (blockedCount(hit.id) > 0){
+shake(hit.id);
+var n = blockedCount(hit.id);
+toast('被上面 ' + n + ' 块压住了，先清掉它们');
+SFX.fail();
+return;
+}
+tryPick(hit.id);
+});
+board.addEventListener('keydown', function(e){
+if (e.key !== 'Enter' && e.key !== ' ') return;
+var el = e.target.closest('.piece');
+if (!el) return;
+e.preventDefault();
+var id = +el.dataset.id;
+if (blockedCount(id) > 0) { toast('被压住了'); return; }
+tryPick(id);
+});
+function trayMatchIndex(p){
+for (var i = 0; i < S.tray.length; i++){
+if (G.canMatch(p, S.level.pieces[S.tray[i]], S.cfg.orient)) return i;
+}
+return -1;
+}
+function snapshot(){
+S.history.push({
+alive: S.alive.slice(),
+tray: S.tray.slice(),
+progress: S.progress,
+moves: S.moves
+});
+if (S.history.length > 30) S.history.shift();
+}
+function tryPick(id){
+if (!S.alive[id]) return false;
+if (blockedCount(id) > 0) return false;
+var p = S.level.pieces[id];
+var mi = trayMatchIndex(p);
+if (S.tray.length >= S.cfg.C && mi < 0){
+shake(id);
+toast('卡槽满了，只能拿能配对的碎片');
+SFX.fail();
+checkDeadlock();
+return false;
+}
+snapshot();
+S.alive[id] = false;
+S.moves++;
+try { SFX.pick(); } catch(e){}
+if (mi >= 0){
+var partner = S.tray[mi];
+S.tray.splice(mi, 1);
+S.progress++;
+if (!S.firstMatch) { S.firstMatch = Date.now() - S.start; track('first_match', { t: S.firstMatch }); }
+var now = Date.now();
+S.combos = (now - S.lastMerge < 2000) ? S.combos + 1 : 0;
+S.lastMerge = now;
+if (S.combos >= 2) { try { SFX.combo(S.combos); } catch(e){} }
+SFX.snap();
+renderTray();
+flashSlotAt(mi);
+trayEl.classList.add('bite');
+setTimeout(function(){ trayEl.classList.remove('bite'); }, 420);
+var burst = document.createElement('div');
+burst.className = 'bite-burst';
+trayEl.appendChild(burst);
+setTimeout(function(){ if (burst.parentNode) burst.parentNode.removeChild(burst); }, 480);
+popProgressCell();
+track('match', { combo: S.combos });
+} else {
+S.tray.push(id);
+if (S.tray.length > S.trayPeak) { S.trayPeak = S.tray.length; track('tray_peak', { peak: S.trayPeak }); }
+renderTray();
+track('pick', { tray: S.tray.length });
+}
+var el = pieceEls[id];
+if (el){
+el.classList.add('picked');
+(function(node, pid){ setTimeout(function(){ if (node && node.parentNode) node.parentNode.removeChild(node); }, 160); })(el, id);
+delete pieceEls[id];
+}
+if (!S.recent) S.recent = [];
+S.recent.push({
+label: G.SHAPE_NAME[p.shape] + G.COLOR_NAME[p.color] + (p.orientation === 'tab' ? '凸' : '凹'),
+matched: mi >= 0
+});
+if (S.recent.length > 8) S.recent.shift();
+updatePieceEls();
+updateDebug();
+advanceCoach(mi >= 0);
+maybeCoach();
+if (aliveCount() === 0) { win(); return true; }
+checkDeadlock();
+return true;
+}
+function flashSlotAt(index){
+var slot = trayEl.children[index];
+if (slot) { slot.classList.add('flash'); setTimeout(function(){ slot.classList.remove('flash'); }, 520); }
+}
+function shake(id){
+var el = pieceEls[id];
+if (!el) return;
+el.classList.add('shake');
+setTimeout(function(){ el.classList.remove('shake'); }, 320);
+}
+function matchablePieces(){
+var out = [];
+for (var id in pieceEls){
+if (!S.alive[id]) continue;
+if (blockedCount(+id) > 0) continue;
+if (trayMatchIndex(S.level.pieces[id]) >= 0) out.push(+id);
+}
+return out;
+}
+function checkDeadlock(){
+if (S.dead || S.won) return;
+if (S.tray.length < S.cfg.C) return;
+if (matchablePieces().length > 0) return;
+S.dead = true;
+S.deadlocks++;
+track('deadlock', { tray: S.tray.length, left: aliveCount() });
+SFX.fail();
+var recap = (S.recent || []).slice(-5).map(function (m) {
+return (m.matched ? '✓ ' : '· ') + m.label + (m.matched ? ' 咬合' : ' 入槽');
+}).join('<br>');
+showModal(
+'<h2>没有能配对的碎片了</h2>' +
+'<p>卡槽 ' + S.cfg.C + ' 格已满，盘面上也没有能配对的碎片。</p>' +
+(recap ? '<div class="recap">最近 5 步<br>' + recap + '</div>' : '') +
+'<p style="font-size:12px">提示：卡槽剩 2 格时，先拿能和卡槽配对的碎片，别拿"伙伴还压在下面"的。</p>' +
+'<div class="btns"><button class="primary" data-act="rescue">洗牌救援</button>' +
+'<button data-act="restart">重开本关</button></div>'
+);
+}
+function win(){
+if (S.won || S.tray.length > 0) return;
+S.won = true;
+clearInterval(timerHandle);
+var t = fmtTime(Date.now() - S.start);
+track('level_win', { time: Date.now() - S.start, moves: S.moves, trayPeak: S.trayPeak, undos: 2 - S.undosLeft });
+SFX.combo(3);
+var stars = S.trayPeak <= Math.max(2, S.cfg.C - 3) ? 3 : (S.trayPeak <= S.cfg.C - 2 ? 2 : 1);
+showModal(
+'<h2>拼好了！</h2>' +
+'<p>' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '<br>用时 ' + t + ' · ' + S.moves + ' 步 · 卡槽峰值 ' + S.trayPeak + '</p>' +
+'<div class="btns">' +
+(S.idx < G.LEVELS.length - 1 ? '<button class="primary" data-act="next">下一关</button>' : '') +
+'<button data-act="restart">重玩本关</button></div>'
+);
+}
+function rescue(){
+if (!S || !S.dead) return;
+var r = G.revive(S.level, S.alive, S.tray);
+if (!r.ok) {
+toast('救援失败：' + (r.reason || '请重开本关'));
+track('revive_fail', { reason: r.reason });
+return;
+}
+S.dead = false;
+S.alive = r.alive;
+S.tray = [];
+S.history = [];
+closeModal();
+renderBoard(); renderTray(); renderProgress(); updateStats();
+track('revive', { back: r.back.length });
+toast('已救回：' + r.back.length + ' 块放回盘面');
+}
+function undo(){
+if (!S || S.dead || S.won || S.auto) return;
+if (S.undosLeft <= 0) { toast('本关撤回次数用完了'); return; }
+if (!S.history.length) { toast('没有可撤回的操作'); return; }
+var h = S.history.pop();
+S.alive = h.alive; S.tray = h.tray; S.progress = h.progress; S.moves = h.moves;
+S.undosLeft--;
+renderBoard(); renderTray(); renderProgress(); updateStats();
+track('undo', { left: S.undosLeft });
+}
+function shuffle(){
+if (!S || S.dead || S.won || S.auto) return;
+if (S.shufflesLeft <= 0) { toast('本关洗牌次数用完了'); return; }
+var r = G.shuffleBoard(S.level, S.alive, S.tray, Date.now());
+if (!r.ok) { toast('洗牌失败（已恢复原状）'); track('shuffle_fail', { reason: r.reason }); return; }
+S.shufflesLeft--;
+S.alive = r.alive;
+S.tray = [];
+S.history = [];
+renderBoard(); renderTray(); renderProgress(); updateStats();
+track('shuffle', { left: S.shufflesLeft, back: r.back.length });
+toast(r.back.length ? ('已洗牌（卡槽 ' + r.back.length + ' 块放回盘面）') : '已洗牌');
+}
+function hint(){
+if (!S || S.dead || S.won || S.auto) return;
+var unblocked = [];
+for (var id in pieceEls){
+if (S.alive[id] && blockedCount(+id) === 0) unblocked.push(+id);
+}
+if (!unblocked.length) return;
+for (var i = 0; i < unblocked.length; i++){
+if (trayMatchIndex(S.level.pieces[unblocked[i]]) >= 0){
+highlight([unblocked[i]]);
+highlightTray(S.tray[trayMatchIndex(S.level.pieces[unblocked[i]])]);
+toast('提示：这块能和卡槽配对');
+track('hint', { kind: 'tray' });
+return;
+}
+}
+for (var a = 0; a < unblocked.length; a++){
+for (var b = a + 1; b < unblocked.length; b++){
+if (G.canMatch(S.level.pieces[unblocked[a]], S.level.pieces[unblocked[b]], S.cfg.orient)){
+highlight([unblocked[a], unblocked[b]]);
+toast('提示：这两块可以配对');
+track('hint', { kind: 'pair' });
+return;
+}
+}
+}
+highlight([unblocked[0]]);
+toast('提示：先拿这块，能解锁更多');
+track('hint', { kind: 'single' });
+}
+function highlight(ids){
+ids.forEach(function(id){
+var el = pieceEls[id];
+if (!el) return;
+el.classList.add('hint');
+setTimeout(function(){ el.classList.remove('hint'); }, 2000);
+});
+}
+function highlightTray(pid){
+var slot = trayEl.querySelector('.slot[data-pid="' + pid + '"]');
+if (slot){ slot.classList.add('flash'); setTimeout(function(){ slot.classList.remove('flash'); }, 1200); }
+}
+async function autoSolve(){
+if (!S || S.auto || S.won || S.dead) return;
+var sol = null;
+var ver = G.verifySequence(S.level, S.alive, S.tray);
+if (ver.ok) sol = S.level.solution.filter(function (id) { return S.alive[id]; });
+if (!sol) sol = G.rebuildSolution(S.level, S.alive, S.tray, Date.now());
+if (!sol) { toast('当前盘无法重建解序列'); return; }
+S.auto = true;
+toast('自动通关中…');
+for (var i = 0; i < sol.length; i++){
+if (S.won || S.dead) break;
+tryPick(sol[i]);
+await sleep(70);
+}
+S.auto = false;
+}
+function checkCurrent(){
+if (!S) return;
+var r = G.simulateFromState(S.level, S.alive, S.tray, 60, Date.now(), 'planning');
+$('dSolve').textContent = (r.winRate * 100).toFixed(0) + '%';
+toast('当前盘可解率 ' + (r.winRate * 100).toFixed(0) + '%');
+}
+function exportEvents(){
+var blob = new Blob([JSON.stringify({ exportedAt: Date.now(), events: EVENTS }, null, 2)], { type: 'application/json' });
+var a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'yjxx-events.json';
+a.click();
+setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+toast('已导出 ' + EVENTS.length + ' 条事件');
+}
+function forceDeadlock(){
+if (!S) return { dead: false };
+var r = null;
+for (var attempt = 0; attempt < 10; attempt++) {
+var cand = G.randomDeadlock(S.level, (Date.now() + attempt * 7919) % 1000000, 3000);
+if (cand.dead) { r = cand; break; }
+r = cand;
+}
+if (!r || !r.dead) { toast('本局没有自然跑到死局，再点一次'); return { dead: false, moves: r ? r.moves : 0 }; }
+S.alive = r.alive;
+S.tray = r.tray;
+S.dead = false; S.won = false;
+renderBoard(); renderTray(); renderProgress(); updateStats();
+checkDeadlock();
+return { dead: S.dead, tray: S.tray.length, left: aliveCount(), moves: r.moves };
+}
+function rescueRegression(){
+var tested = 0, ok = 0, fails = [];
+for (var i = 1; i <= 5; i++) {
+var lv = G.generateLevel(S.cfg, 0);
+var d = G.randomDeadlock(lv, i * 977 + 13, 3000);
+if (!d.dead) continue;
+tested++;
+var r = G.revive(lv, d.alive, d.tray);
+if (r.ok && G.verifySequence(lv, r.alive, []).ok && G.parityOk(lv, r.alive, []).ok) ok++;
+else fails.push('seed' + i + ':' + (r.reason || 'verify'));
+}
+document.getElementById('dRescue').textContent = ok + '/' + tested;
+track('rescue_regression', { tested: tested, ok: ok });
+toast('救援回归：' + ok + '/' + tested);
+return { tested: tested, ok: ok, fails: fails };
+}
+function updateDebug(){
+if (!S) return;
+var first = EVENTS.filter(function(e){ return e.name === 'first_match'; }).slice(-1)[0];
+$('dN').textContent = S.cfg.N + ' / ' + S.cfg.L + ' / ' + S.cfg.T;
+$('dK').textContent = S.cfg.C + ' / ' + S.level.meta.kStart;
+$('dBlock').textContent = (S.level.meta.blockedRate * 100).toFixed(0) + '% / ' + S.level.meta.layerSpread;
+$('dLeft').textContent = aliveCount() + ' / ' + S.trayPeak;
+$('dEvents').textContent = EVENTS.length + ' / ' + (first ? (first.t / 1000).toFixed(1) + 's' : '-');
+$('dPeak').textContent = S.trayPeak + ' / ' + S.deadlocks;
+var rr = EVENTS.filter(function(e){ return e.name === 'rescue_regression'; }).slice(-1)[0];
+if (rr) $('dRescue').textContent = rr.ok + '/' + rr.tested;
+}
+function showModal(html){ modal.innerHTML = html; modalBg.classList.add('show'); }
+function closeModal(){ modalBg.classList.remove('show'); }
+modal.addEventListener('click', function(e){
+var btn = e.target.closest('button[data-act]');
+if (!btn) return;
+var act = btn.dataset.act;
+if (act === 'next') loadLevel(Math.min(S.idx + 1, G.LEVELS.length - 1));
+if (act === 'restart') loadLevel(S.idx);
+if (act === 'rescue') rescue();
+if (act === 'close') closeModal();
+});
+function advanceCoach(matched){
+if (!S || S.cfg.level !== 1 || S.coach < 0) return;
+if (S.coach === 0 && S.moves >= 1){ S.coach = 1; return; }
+if (S.coach === 1 && matched){
+S.coach = 2;
+setTimeout(function(){
+if (S && S.cfg.level === 1 && S.coach === 2){ S.coach = 3; maybeCoach(); }
+}, 2600);
+}
+}
+function maybeCoach(){
+if (!S || S.cfg.level !== 1 || S.coach < 0){
+coachEl.classList.remove('show');
+return;
+}
+if (S.coach === 0){
+var target = null;
+for (var id in pieceEls){ if (S.alive[id] && blockedCount(+id) === 0){ target = +id; break; } }
+if (target === null) return;
+coach('① 点亮的碎片才能拿。点这一块试一下');
+highlight([target]);
+} else if (S.coach === 1){
+var t = null;
+for (var i = 0; i < S.tray.length; i++){
+for (var id2 in pieceEls){
+if (S.alive[id2] && blockedCount(+id2) === 0 &&
+G.canMatch(S.level.pieces[id2], S.level.pieces[S.tray[i]], S.cfg.orient)) { t = +id2; break; }
+}
+if (t !== null) break;
+}
+coach('② 再找一块「同形同色、一凸一凹」的');
+if (t !== null) highlight([t]);
+} else if (S.coach === 2){
+coach('③ 咔哒！进度板亮一格，继续');
+} else {
+coachEl.classList.remove('show');
+}
+}
+function coach(text){
+coachEl.textContent = text;
+coachEl.classList.add('show');
+}
+function showRules(){
+showModal(
+'<h2>规则说明</h2>' +
+'<p style="text-align:left;line-height:1.7">' +
+'1. 盘面是多层堆叠的拼图碎片；只有<b>完全没被压住</b>的顶层碎片可以点。<br>' +
+'2. 点一块 → 进入底部卡槽（本关 ' + (S ? S.cfg.C : 5) + ' 格）。<br>' +
+'3. 卡槽里两块<b>同形同色、且一凸一凹</b> → 自动咬合，进度板点亮一格。<br>' +
+'4. 卡槽满了以后，只能拿能配对的碎片；拿错不会判负，只会提示。<br>' +
+'5. 卡槽满且盘面没有可配对碎片 = 死局，可洗牌救援。<br>' +
+'6. 清空盘面 = 拼完整张图 = 通关。' +
+'</p><div class="btns"><button class="primary" data-act="close">知道了</button></div>'
+);
+}
+$('btnHint').onclick = hint;
+$('btnUndo').onclick = undo;
+$('btnShuffle').onclick = shuffle;
+$('btnRestart').onclick = function(){ loadLevel(S.idx); };
+$('prevLv').onclick = function(){ loadLevel(Math.max(0, S.idx - 1)); };
+$('nextLv').onclick = function(){ loadLevel(Math.min(G.LEVELS.length - 1, S.idx + 1)); };
+$('lvSelect').onchange = function(e){ loadLevel(+e.target.value - 1); };
+$('btnMute').onclick = function(){
+muted = !muted;
+$('btnMute').textContent = muted ? '🔇' : '🔊';
+try { localStorage.setItem('yjxx_muted', muted ? '1' : '0'); } catch(e){}
+};
+$('btnMute').textContent = muted ? '🔇' : '🔊';
+$('btnDebug').onclick = function(){
+var on = dbgPanel.classList.toggle('show');
+document.body.classList.toggle('debug', on);
+if (on) updateDebug();
+};
+$('btnDebugClose').onclick = function(){ dbgPanel.classList.remove('show'); };
+$('btnAuto').onclick = autoSolve;
+$('btnCheck').onclick = checkCurrent;
+$('btnExport').onclick = exportEvents;
+$('btnDeadlock').onclick = forceDeadlock;
+$('btnRescueTest').onclick = rescueRegression;
+$('btnRules').onclick = showRules;
+$('btnRulesTop').onclick = showRules;
+for (var li = 0; li < G.LEVELS.length; li++){
+var cfg = G.LEVELS[li];
+var o = document.createElement('option');
+o.value = String(cfg.level);
+o.textContent = '第 ' + cfg.level + ' 关';
+$('lvSelect').appendChild(o);
+}
+window.__gameDebug = {
+state: function(){ return S; },
+forceTray: function(ids){ S.tray = ids.slice(); renderTray(); },
+checkDeadlock: checkDeadlock,
+pick: tryPick,
+shuffle: shuffle,
+forceDeadlock: forceDeadlock,
+rescueRegression: rescueRegression,
+rescue: rescue,
+autoSolve: autoSolve
+};
+window.__proto = window.__gameDebug;
+var qs = location.search;
+var lm = qs.match(/level=(\d+)/);
+loadLevel(lm ? Math.min(G.LEVELS.length - 1, Math.max(0, +lm[1] - 1)) : 0);
+setTimeout(fitBoard, 50);
+if (qs.indexOf('debug') >= 0) { dbgPanel.classList.add('show'); document.body.classList.add('debug'); }
+if (qs.indexOf('autoplay') >= 0) setTimeout(autoSolve, 400);
+})();</script></body></html>
