@@ -1157,9 +1157,9 @@ showModal(
 : '本关救援已用完（正式版可看广告 +1）。') + '</p>' +
 '<div class="btns">' +
 (S.rescuesLeft > 0
-? '<button class="primary" data-act="rescue">洗牌救援（剩 ' + S.rescuesLeft + ' 次）</button>'
-: '') +
-'<button class="primary" data-act="restart">重开本关</button></div>'
+? '<button class="primary" data-act="rescue">洗牌救援（剩 ' + S.rescuesLeft + ' 次）</button>' +
+'<button data-act="restart">重开本关</button>'
+: '<button class="primary" data-act="restart">重开本关</button>') + '</div>'
 );
 }
 function win(){
